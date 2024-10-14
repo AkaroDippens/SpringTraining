@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Конвертер валют</title>
+</head>
+<body>
+    <h1>Конвертер валют</h1>
+    <form action="/convert" method="post">
+        <label>Из валюты:</label>
+        <label>
+            <select name="fromCurrency" required>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="RUB">RUB</option>
+            </select>
+        </label>
+        <br>
+        <label>В валюту:</label>
+        <label>
+            <select name="toCurrency" required>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="RUB">RUB</option>
+            </select>
+        </label>
+        <br>
+        <label>Сумма:</label>
+        <label>
+            <input type="number" name="amount" required>
+        </label>
+        <br>
+        <input type="submit" value="Конвертировать">
+        <br>
+        <h1>Результат:</h1>
+        <p th:if="${result != null}">
+            Сумма <span th:text="${amount}"></span> из <span th:text="${fromCurrency}"></span>
+            в <span th:text="${toCurrency}"></span> равна <strong th:text="${result}"></strong>
+        </p>
+        <a href="/">Вернуться на главную</a>
+    </form>
+</body>
+</html>

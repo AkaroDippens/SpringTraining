@@ -14,4 +14,9 @@ class MainController {
     fun getCalculator(): String {
         return "calculator"
     }
+
+    @GetMapping("/convert")
+    fun getConverter(): String {
+        return "converter"
+    }
 }
