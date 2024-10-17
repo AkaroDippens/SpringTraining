@@ -133,8 +133,12 @@ class StudentController {
     }
 
     @PostMapping("/students/deleteMultiple")
-    fun deleteMultipleStudents(@RequestParam studentIds: List<Int>): String {
-        studentService?.deleteMultipleStudents(studentIds)
+    fun deleteMultipleStudents(@RequestParam studentIds: List<Int>?): String {
+        if (!studentIds.isNullOrEmpty()) {
+            studentService?.deleteMultipleStudents(studentIds)
+        } else {
+            return "redirect:/students"
+        }
         return "redirect:/students" // Перенаправляем на страницу списка студентов
     }
 }

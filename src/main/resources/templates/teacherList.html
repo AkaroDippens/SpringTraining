@@ -59,12 +59,14 @@
       </form>
       <form action="/teachers/delete" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${teacher.id}"/>
-        <button type="submit">Удалить</button>
+        <button type="submit" name="action" value="logical">Удалить логически</button>
+      </form>
+      <form action="/teachers/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${teacher.id}"/>
+        <button type="submit" name="action" value="physical">Удалить физически</button>
       </form>
     </li>
   </th:block>
-  <br><br>
-  <a href="/">Вернуться на главную</a>
 </ul>
 
 <br><br>
@@ -98,5 +100,7 @@
     </div>
   </div>
 </div>
+
+<a href="/">Вернуться на главную</a>
 </body>
 </html>

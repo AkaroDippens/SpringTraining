@@ -12,6 +12,6 @@ interface TeacherService {
     fun addTeacher(teacher: TeacherModel): TeacherModel?
     fun updateTeacher(teacher: TeacherModel): TeacherModel?
     fun deleteTeacher(id: Int)
-    fun deleteMultipleTeachers(teacherIds: List<Int>)
+    fun deleteMultipleTeachers(teacherIds: List<Int>?)
     fun logicalDeleteTeacher(id: Int)
 }

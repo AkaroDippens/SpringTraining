@@ -96,8 +96,15 @@ class TeacherController {
     }
 
     @PostMapping("/teachers/delete")
-    fun deleteTeacher(@RequestParam id: Int): String {
-        teacherService?.deleteTeacher(id)
+    fun deleteTeacher(@RequestParam id: Int, @RequestParam action: String): String {
+        when (action) {
+            "logical" -> {
+                teacherService?.logicalDeleteTeacher(id)
+            }
+            "physical" -> {
+                teacherService?.deleteTeacher(id)
+            }
+        }
         return "redirect:/teachers"
     }
 
@@ -110,8 +117,12 @@ class TeacherController {
     }
 
     @PostMapping("/teachers/deleteMultiple")
-    fun deleteMultipleTeachers(@RequestParam teacherIds: List<Int>): String {
-        teacherService?.deleteMultipleTeachers(teacherIds)
+    fun deleteMultipleTeachers(@RequestParam teacherIds: List<Int>?): String {
+        if (!teacherIds.isNullOrEmpty()) {
+            teacherService?.deleteMultipleTeachers(teacherIds)
+        } else {
+            return "redirect:/teachers"
+        }
         return "redirect:/teachers"
     }
 }

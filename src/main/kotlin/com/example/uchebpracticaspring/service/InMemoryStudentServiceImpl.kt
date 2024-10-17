@@ -36,8 +36,10 @@ class InMemoryStudentServiceImpl(private val studentRepository: InMemoryStudentR
         return studentRepository.findStudentByName(name, lastName, firstName, middleName)
     }
 
-    override fun deleteMultipleStudents(studentIds: List<Int>) {
-        studentRepository.deleteMultipleStudents(studentIds)
+    override fun deleteMultipleStudents(studentIds: List<Int>?) {
+        if (studentIds!!.isNotEmpty()) {
+            studentRepository.deleteMultipleStudents(studentIds)
+        }
     }
 
     override fun logicalDeleteStudent(id: Int) {

@@ -13,6 +13,6 @@ interface StudentService {
     fun addStudent(student: StudentModel): StudentModel?
     fun updateStudent(student: StudentModel): StudentModel?
     fun deleteStudent(id: Int)
-    fun deleteMultipleStudents(studentIds: List<Int>)
+    fun deleteMultipleStudents(studentIds: List<Int>?)
     fun logicalDeleteStudent(id: Int)
 }

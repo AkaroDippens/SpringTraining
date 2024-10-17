@@ -37,8 +37,10 @@ class InMemoryTeacherServiceImpl(private val teacherRepository: InMemoryTeacherR
         return teacherRepository.findTeacherByName(name, lastName)
     }
 
-    override fun deleteMultipleTeachers(teacherIds: List<Int>) {
-        teacherRepository.deleteMultipleTeachers(teacherIds)
+    override fun deleteMultipleTeachers(teacherIds: List<Int>?) {
+        if (teacherIds!!.isNotEmpty()) {
+            teacherRepository.deleteMultipleTeachers(teacherIds)
+        }
     }
 
     override fun logicalDeleteTeacher(id: Int) {

@@ -48,8 +48,10 @@ class InMemoryTeacherRepository {
                 && (lastName.isNullOrEmpty() || teacher?.lastName == lastName) }
     }
 
-    fun deleteMultipleTeachers(teacherIds: List<Int>) {
-        teachers.removeIf { teacher -> teacher?.id in teacherIds }
+    fun deleteMultipleTeachers(teacherIds: List<Int>?) {
+        if (teacherIds!!.isNotEmpty()) {
+            teachers.removeIf { teacher -> teacher?.id in teacherIds }
+        }
     }
 
     fun logicalDeleteTeacher(id: Int) {
