@@ -3,6 +3,8 @@ package com.example.uchebpracticaspring.service
 import com.example.uchebpracticaspring.model.TeacherModel
 import com.example.uchebpracticaspring.repository.InMemoryStudentRepository
 import com.example.uchebpracticaspring.repository.InMemoryTeacherRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 
@@ -10,8 +12,8 @@ import org.springframework.stereotype.Service
 //так же мы тут можем настроить инкапсуляцию
 //А если простыми словами тут происходит разделенние запросов от контроллера к сервису
 @Service
-class InMemoryTeacherServiceImpl(private val teacherRepository: InMemoryTeacherRepository): TeacherService {
-    override fun findAllTeacher(): List<TeacherModel?> {
+class InMemoryTeacherServiceImpl(private val teacherRepository: InMemoryTeacherRepository) : TeacherService {
+    override fun findAllTeachers(): List<TeacherModel?> {
         return teacherRepository.findAllTeachers()
     }
 
@@ -28,10 +30,22 @@ class InMemoryTeacherServiceImpl(private val teacherRepository: InMemoryTeacherR
     }
 
     override fun deleteTeacher(id: Int) {
-        return teacherRepository.deleteTeacher(id)
+        teacherRepository.deleteTeacher(id)
     }
 
-    override fun findTeacherByName(name: String?, lastName: String?, subject: String?): List<TeacherModel?> {
-        return teacherRepository.findTeacherByName(name, lastName, subject)
+    override fun findTeacherByName(name: String?, lastName: String?): List<TeacherModel?> {
+        return teacherRepository.findTeacherByName(name, lastName)
+    }
+
+    override fun deleteMultipleTeachers(teacherIds: List<Int>) {
+        teacherRepository.deleteMultipleTeachers(teacherIds)
+    }
+
+    override fun logicalDeleteTeacher(id: Int) {
+        teacherRepository.logicalDeleteTeacher(id)
+    }
+
+    override fun findPaginatedTeachers(pageable: Pageable): Page<TeacherModel?> {
+        return teacherRepository.findPaginatedTeachers(pageable)
     }
 }

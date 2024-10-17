@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Список учителей</title>
+  <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
 <h1>Список учителей</h1>
@@ -10,6 +11,8 @@
   <input type="text" name="name" placeholder="Имя" required>
   <input type="text" name="lastName" placeholder="Фамилия" required>
   <input type="text" name="subject" placeholder="Преподаваемый предмет" required>
+  <input type="number" name="age" placeholder="Возраст" required>
+  <input type="number" name="stage" placeholder="Стаж" required>
   <button type="submit">Добавить учителя</button>
 </form>
 
@@ -18,7 +21,6 @@
   <form action="/teachers/find" method="get">
     <input type="text" name="name" placeholder="Введите имя для поиска"/>
     <input type="text" name="lastName" placeholder="Введите фамилию для поиска"/>
-    <input type="text" name="subject" placeholder="Введите предмет для поиска"/>
     <button type="submit">Поиск</button>
   </form>
   <form action="/teachers" method="get" style="margin-left: 2px">
@@ -26,15 +28,33 @@
   </form>
 </div>
 
+<form action="/teachers/filter" method="get">
+  <label for="subject">Предмет:</label>
+  <select id="subject" name="subject">
+    <option value="" selected>Все предметы</option>
+    <th:block th:each="sub : ${availableSubjects}">
+      <option th:value="${sub}" th:text="${sub}"></option>
+    </th:block>
+  </select>
+
+  <input type="number" name="age" placeholder="Возраст (больше чем)"/>
+  <input type="number" name="stage" placeholder="Стаж (больше чем)"/>
+
+  <button type="submit">Применить фильтр</button>
+</form>
+
 <ul>
   <th:block th:each="teacher : ${teachers}">
     <li>
-      <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject}"></span>
+      <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject} + ' ' + ${teacher.age} +
+' ' + ${teacher.stage}"></span>
       <form action="/teachers/update" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${teacher.id}"/>
-        <input type="text" name="name" placeholder="Имя" required/>
-        <input type="text" name="lastName" placeholder="Фамилия" required/>
-        <input type="text" name="subject" placeholder="Преподаваемый предмет" required/>
+        <input type="text" name="name" placeholder="Имя" th:value="${teacher.name}" required/>
+        <input type="text" name="lastName" placeholder="Фамилия" th:value="${teacher.lastName}" required/>
+        <input type="text" name="subject" placeholder="Преподаваемый предмет" th:value="${teacher.subject}" required/>
+        <input type="text" name="age" placeholder="Возраст" th:value="${teacher.age}" required/>
+        <input type="text" name="stage" placeholder="Стаж" th:value="${teacher.stage}" required/>
         <button type="submit">Обновить</button>
       </form>
       <form action="/teachers/delete" method="post" style="display:inline;">
@@ -46,5 +66,37 @@
   <br><br>
   <a href="/">Вернуться на главную</a>
 </ul>
+
+<br><br>
+<h2>Множественное удаление учителей</h2>
+<form action="/teachers/deleteMultiple" method="post">
+  <ul>
+    <th:block th:each="teacher : ${teachers}">
+      <li>
+        <input type="checkbox" name="teacherIds" th:value="${teacher.id}">
+        <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject} + ' ' + ${teacher.age} +
+' ' + ${teacher.stage}"></span>
+      </li>
+    </th:block>
+  </ul>
+  <button type="submit">Удалить выбранных студентов</button>
+</form>
+
+<div>
+  <div th:if="${totalPages > 1}">
+    <span th:text="'Страница ' + ${currentPage + 1} + ' из ' + ${totalPages}"></span>
+    <br><br>
+
+    <div class="pagination">
+      <th:block th:if="${currentPage > 0}">
+        <a th:href="@{/teachers(page=${currentPage - 1}, size=${pageSize})}" class="pagination-button">Предыдущая</a>
+      </th:block>
+
+      <th:block th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/teachers(page=${currentPage + 1}, size=${pageSize})}" class="pagination-button">Следующая</a>
+      </th:block>
+    </div>
+  </div>
+</div>
 </body>
 </html>
