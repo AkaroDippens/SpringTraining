@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Список студентов</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<h1>Список студентов</h1>
+
+<h2>Создать студента</h2>
+
+<form action="/students/add" method="post">
+  <input type="text" name="name" placeholder="Имя" required>
+  <input type="text" name="lastName" placeholder="Фамилия" required>
+  <input type="text" name="firstName" placeholder="Отчество" required>
+  <input type="text" name="middleName" placeholder="Дополнительное имя" required>
+  <input type="text" name="averageGrade" placeholder="Средний балл" required/>
+  <input type="text" name="university" placeholder="Университет" required/>
+  <input type="text" name="course" placeholder="Курс" required/>
+  <button type="submit">Добавить студента</button>
+</form>
+
+<h2>Все студенты:</h2>
+<div style="display: flex; align-items: center">
+  <form action="/students/find" method="get">
+    <input type="text" name="name" placeholder="Введите имя для поиска"/>
+    <input type="text" name="lastName" placeholder="Введите фамилию для поиска" />
+    <input type="text" name="firstName" placeholder="Введите отчество для поиска"/>
+    <input type="text" name="middleName" placeholder="Введите дополнительное имя для поиска"/>
+    <button type="submit">Поиск</button>
+  </form>
+  <form action="/students" method="get" style="margin-left: 2px">
+    <button type="submit">Очистить поиск</button>
+  </form>
+</div>
+
+<br>
+<form action="/students/filter" method="get">
+  <!-- Выпадающий список для фильтрации по университету -->
+  <label for="university">Университет:</label>
+  <select id="university" name="university">
+    <option value="" selected>Все университеты</option>
+    <th:block th:each="uni : ${availableUniversities}">
+      <option th:value="${uni}" th:text="${uni}"></option>
+    </th:block>
+  </select>
+
+  <!-- Выпадающий список для фильтрации по курсу -->
+  <label for="course">Курс:</label>
+  <select id="course" name="course">
+    <option value="" selected>Все курсы</option>
+    <th:block th:each="course : ${availableCourses}">
+      <option th:value="${course}" th:text="${course}"></option>
+    </th:block>
+  </select>
+
+  <!-- Выпадающий список для фильтрации по среднему баллу -->
+  <label for="averageGrade">Средний балл:</label>
+  <select id="averageGrade" name="averageGrade">
+    <option value="" selected>Все оценки</option>
+    <th:block th:each="grade : ${availableGrades}">
+      <option th:value="${grade}" th:text="${grade}"></option>
+    </th:block>
+  </select>
+
+  <button type="submit">Применить фильтр</button>
+</form>
+
+<ul>
+  <th:block th:each="student : ${students}">
+    <li>
+      <span th:text="${student.name} + ' ' + ${student.lastName} + ' ' + ${student.firstName} + ' ' + ${student.middleName}"></span>
+      <form action="/students/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${student.id}"/>
+        <input type="text" name="name" placeholder="Имя" th:value="${student.name}"/>
+        <input type="text" name="lastName" placeholder="Фамилия" th:value="${student.lastName}" required/>
+        <input type="text" name="firstName" placeholder="Отчество" th:value="${student.firstName}" required/>
+        <input type="text" name="middleName" placeholder="Дополнительное имя" th:value="${student.middleName}" required/>
+        <input type="text" name="averageGrade" placeholder="Средний балл" th:value="${student.averageGrade}" required/>
+        <input type="text" name="university" placeholder="Университет" th:value="${student.course}" required/>
+        <input type="text" name="course" placeholder="Курс" th:value="${student.university}" required/>
+        <button type="submit">Обновить</button>
+      </form>
+
+      <form action="/students/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${student.id}"/>
+        <button type="submit" name="action" value="logical">Удалить логически</button>
+      </form>
+      <form action="/students/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${student.id}"/>
+        <button type="submit" name="action" value="physical">Удалить физически</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+<br><br>
+<h2>Множественное удаление студентов</h2>
+<form action="/students/deleteMultiple" method="post">
+  <ul>
+    <th:block th:each="student : ${students}">
+      <li>
+        <input type="checkbox" name="studentIds" th:value="${student.id}">
+        <span th:text="${student.name} + ' ' + ${student.lastName} + ' ' + ${student.firstName} + ' ' + ${student.middleName}"></span>
+      </li>
+    </th:block>
+  </ul>
+  <button type="submit">Удалить выбранных студентов</button>
+</form>
+
+<div>
+  <div th:if="${totalPages > 1}">
+    <span th:text="'Страница ' + ${currentPage + 1} + ' из ' + ${totalPages}"></span>
+    <br><br>
+
+    <div class="pagination">
+      <th:block th:if="${currentPage > 0}">
+        <a th:href="@{/students(page=${currentPage - 1}, size=${pageSize})}" class="pagination-button">Предыдущая</a>
+      </th:block>
+
+      <th:block th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/students(page=${currentPage + 1}, size=${pageSize})}" class="pagination-button">Следующая</a>
+      </th:block>
+    </div>
+  </div>
+</div>
+
+<a href="/">Вернуться на главную</a>
+</body>
+</html>

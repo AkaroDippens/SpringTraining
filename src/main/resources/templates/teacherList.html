@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Список учителей</title>
+</head>
+<body>
+<h1>Список учителей</h1>
+<form action="/teachers/add" method="post">
+  <input type="text" name="name" placeholder="Имя" required>
+  <input type="text" name="lastName" placeholder="Фамилия" required>
+  <input type="text" name="subject" placeholder="Преподаваемый предмет" required>
+  <button type="submit">Добавить учителя</button>
+</form>
+
+<h2>Все учителя:</h2>
+<div style="display: flex; align-items: center">
+  <form action="/teachers/find" method="get">
+    <input type="text" name="name" placeholder="Введите имя для поиска"/>
+    <input type="text" name="lastName" placeholder="Введите фамилию для поиска"/>
+    <input type="text" name="subject" placeholder="Введите предмет для поиска"/>
+    <button type="submit">Поиск</button>
+  </form>
+  <form action="/teachers" method="get" style="margin-left: 2px">
+    <button type="submit">Очистить поиск</button>
+  </form>
+</div>
+
+<ul>
+  <th:block th:each="teacher : ${teachers}">
+    <li>
+      <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject}"></span>
+      <form action="/teachers/update" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${teacher.id}"/>
+        <input type="text" name="name" placeholder="Имя" required/>
+        <input type="text" name="lastName" placeholder="Фамилия" required/>
+        <input type="text" name="subject" placeholder="Преподаваемый предмет" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/teachers/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${teacher.id}"/>
+        <button type="submit">Удалить</button>
+      </form>
+    </li>
+  </th:block>
+  <br><br>
+  <a href="/">Вернуться на главную</a>
+</ul>
+</body>
+</html>
