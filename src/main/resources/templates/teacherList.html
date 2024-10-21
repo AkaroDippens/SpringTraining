@@ -1,26 +1,34 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Список учителей</title>
   <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-<h1>Список учителей</h1>
-<form action="/teachers/add" method="post">
-  <input type="text" name="name" placeholder="Имя" required>
-  <input type="text" name="lastName" placeholder="Фамилия" required>
-  <input type="text" name="subject" placeholder="Преподаваемый предмет" required>
-  <input type="number" name="age" placeholder="Возраст" required>
-  <input type="number" name="stage" placeholder="Стаж" required>
+<h1 style="text-align: center">Список учителей</h1>
+
+<h2>Создать учителя</h2>
+
+<form action="/teachers/addOrUpdate" method="post" th:object="${teacher}">
+  <input type="text" th:field="*{name}" placeholder="Имя" required>
+  <input type="text" th:field="*{lastName}" placeholder="Фамилия" required>
+  <select th:field="*{subjects}" multiple required>
+    <option value="">Выберите предметы</option>
+    <th:block th:each="sub : ${availableSubjects}">
+      <option th:value="${sub.id}" th:text="${sub.name}"></option>
+    </th:block>
+  </select>
+  <input type="number" th:field="*{age}" placeholder="Возраст" required>
+  <input type="number" th:field="*{stage}" placeholder="Стаж" required>
   <button type="submit">Добавить учителя</button>
 </form>
 
 <h2>Все учителя:</h2>
 <div style="display: flex; align-items: center">
   <form action="/teachers/find" method="get">
-    <input type="text" name="name" placeholder="Введите имя для поиска"/>
-    <input type="text" name="lastName" placeholder="Введите фамилию для поиска"/>
+    <input type="text" name="name" placeholder="Введите имя"/>
+    <input type="text" name="lastName" placeholder="Введите фамилию"/>
     <button type="submit">Поиск</button>
   </form>
   <form action="/teachers" method="get" style="margin-left: 2px">
@@ -37,8 +45,8 @@
     </th:block>
   </select>
 
-  <input type="number" name="age" placeholder="Возраст (больше чем)"/>
-  <input type="number" name="stage" placeholder="Стаж (больше чем)"/>
+  <input type="number" name="age" placeholder="Мин. возраст"/>
+  <input type="number" name="stage" placeholder="Мин. стаж"/>
 
   <button type="submit">Применить фильтр</button>
 </form>
@@ -46,13 +54,22 @@
 <ul>
   <th:block th:each="teacher : ${teachers}">
     <li>
-      <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject} + ' ' + ${teacher.age} +
-' ' + ${teacher.stage}"></span>
-      <form action="/teachers/update" method="post" style="display:inline;">
+      <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' '"></span>
+      <span>
+            <th:block th:each="sub : ${teacher.subjects}">
+                <span th:text="${sub.name} + ' '"></span>
+            </th:block>
+        </span>
+      <span th:text="' ' + ${teacher.age} + ' ' + ${teacher.stage}"></span>
+      <form action="/teachers/addOrUpdate" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${teacher.id}"/>
         <input type="text" name="name" placeholder="Имя" th:value="${teacher.name}" required/>
         <input type="text" name="lastName" placeholder="Фамилия" th:value="${teacher.lastName}" required/>
-        <input type="text" name="subject" placeholder="Преподаваемый предмет" th:value="${teacher.subject}" required/>
+        <select name="subject" th:value="${teacher.subject}" th:selected="${teacher.subject}" multiple required>
+          <th:block th:each="sub : ${availableSubjects}">
+            <option th:value="${sub.id}" th:selected="${teacher.subjects.contains(sub)}" th:text="${sub.name}"></option>
+          </th:block>
+        </select>
         <input type="text" name="age" placeholder="Возраст" th:value="${teacher.age}" required/>
         <input type="text" name="stage" placeholder="Стаж" th:value="${teacher.stage}" required/>
         <button type="submit">Обновить</button>
@@ -70,7 +87,7 @@
 </ul>
 
 <br><br>
-<h2>Множественное удаление учителей</h2>
+<h2>Удаление учителей</h2>
 <form action="/teachers/deleteMultiple" method="post">
   <ul>
     <th:block th:each="teacher : ${teachers}">
@@ -81,7 +98,7 @@
       </li>
     </th:block>
   </ul>
-  <button type="submit">Удалить выбранных студентов</button>
+  <button type="submit">Удалить выбранных учителей</button>
 </form>
 
 <div>
@@ -100,7 +117,6 @@
     </div>
   </div>
 </div>
-
 <a href="/">Вернуться на главную</a>
 </body>
 </html>

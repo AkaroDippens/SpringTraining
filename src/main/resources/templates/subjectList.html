@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список предметов</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<h1 style="text-align: center">Список предметов</h1>
+
+<h2>Создать предмет</h2>
+
+<form action="/subjects/addOrUpdate" method="post" th:object="${subject}">
+  <input type="text" th:field="*{name}" placeholder="Название предмета" required>
+  <button type="submit">Добавить предмет</button>
+</form>
+
+<h2>Все предметы:</h2>
+
+<ul>
+  <th:block th:each="subject : ${subjects}">
+    <li>
+      <span th:text="${subject.name}"></span>
+      <form action="/subjects/addOrUpdate" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${subject.id}"/>
+        <input type="text" name="name" placeholder="Название предмета" th:value="${subject.name}" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/subjects/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${subject.id}"/>
+        <button type="submit" name="action" value="logical">Удалить логически</button>
+      </form>
+      <form action="/subjects/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${subject.id}"/>
+        <button type="submit" name="action" value="physical">Удалить физически</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<br><br>
+<h2>Удаление предметов</h2>
+<form action="/subjects/deleteMultiple" method="post">
+  <ul>
+    <th:block th:each="subject : ${subjects}">
+      <li>
+        <input type="checkbox" name="subjectIds" th:value="${subject.id}">
+        <span th:text="${subject.name}"></span>
+      </li>
+    </th:block>
+  </ul>
+  <button type="submit">Удалить выбранные предметы</button>
+</form>
+
+<div>
+  <div th:if="${totalPages > 1}">
+    <span th:text="'Страница ' + ${currentPage + 1} + ' из ' + ${totalPages}"></span>
+    <br><br>
+
+    <div class="pagination">
+      <th:block th:if="${currentPage > 0}">
+        <a th:href="@{/subjects(page=${currentPage - 1}, size=${pageSize})}" class="pagination-button">Предыдущая</a>
+      </th:block>
+
+      <th:block th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/subjects(page=${currentPage + 1}, size=${pageSize})}" class="pagination-button">Следующая</a>
+      </th:block>
+    </div>
+  </div>
+</div>
+<a href="/">Вернуться на главную</a>
+</body>
+</html>

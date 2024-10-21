@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список университетов</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<h1 style="text-align: center">Список университетов</h1>
+
+<h2>Создать университет</h2>
+
+<form action="/universities/addOrUpdate" method="post" th:object="${university}">
+  <input type="text" th:field="*{name}" placeholder="Название университета" required>
+  <button type="submit">Добавить университет</button>
+</form>
+
+<h2>Все университеты:</h2>
+
+<ul>
+  <th:block th:each="university : ${universities}">
+    <li>
+      <span th:text="${university.name}"></span>
+      <form action="/universities/addOrUpdate" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${university.id}"/>
+        <input type="text" name="name" placeholder="Название университета" th:value="${university.name}" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/universities/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${university.id}"/>
+        <button type="submit" name="action" value="logical">Удалить логически</button>
+      </form>
+      <form action="/universities/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${university.id}"/>
+        <button type="submit" name="action" value="physical">Удалить физически</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<br><br>
+<h2>Удаление университетов</h2>
+<form action="/universities/deleteMultiple" method="post">
+  <ul>
+    <th:block th:each="university : ${universities}">
+      <li>
+        <input type="checkbox" name="universityIds" th:value="${university.id}">
+        <span th:text="${university.name}"></span>
+      </li>
+    </th:block>
+  </ul>
+  <button type="submit">Удалить выбранные университеты</button>
+</form>
+
+<div>
+  <div th:if="${totalPages > 1}">
+    <span th:text="'Страница ' + ${currentPage + 1} + ' из ' + ${totalPages}"></span>
+    <br><br>
+
+    <div class="pagination">
+      <th:block th:if="${currentPage > 0}">
+        <a th:href="@{/universities(page=${currentPage - 1}, size=${pageSize})}" class="pagination-button">Предыдущая</a>
+      </th:block>
+
+      <th:block th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/universities(page=${currentPage + 1}, size=${pageSize})}" class="pagination-button">Следующая</a>
+      </th:block>
+    </div>
+  </div>
+</div>
+<a href="/">Вернуться на главную</a>
+</body>
+</html>

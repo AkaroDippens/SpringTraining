@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Список оценок</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<h1 style="text-align: center">Список оценок</h1>
+
+<h2>Создать оценку</h2>
+
+<form action="/grades/addOrUpdate" method="post" th:object="${gradeModel}">
+  <input type="text" th:field="*{gradeContent}" placeholder="Оценка" required>
+  <button type="submit">Добавить оценку</button>
+</form>
+
+<h2>Все оценки:</h2>
+
+<ul>
+  <th:block th:each="grade_el : ${gradeModels}">
+    <li>
+      <span th:text="${grade_el.gradeContent}"></span>
+      <form action="/grades/addOrUpdate" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${grade_el.id}"/>
+        <input type="text" name="gradeContent" th:value="${grade_el.gradeContent}" placeholder="Оценка" required/>
+        <button type="submit">Обновить</button>
+      </form>
+      <form action="/grades/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${grade_el.id}"/>
+        <button type="submit" name="action" value="logical">Удалить логически</button>
+      </form>
+      <form action="/grades/delete" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${grade_el.id}"/>
+        <button type="submit" name="action" value="physical">Удалить физически</button>
+      </form>
+    </li>
+  </th:block>
+</ul>
+
+<br><br>
+<h2>Удаление оценок</h2>
+<form action="/grades/deleteMultiple" method="post">
+  <ul>
+    <th:block th:each="grade_el : ${allGradeModels}">
+      <li>
+        <input type="checkbox" name="gradeIds" th:value="${grade_el.id}">
+        <span th:text="${grade_el.gradeContent}"></span>
+      </li>
+    </th:block>
+  </ul>
+  <button type="submit">Удалить выбранные оценки</button>
+</form>
+
+<div>
+  <div th:if="${totalPages > 1}">
+    <span th:text="'Страница ' + ${currentPage + 1} + ' из ' + ${totalPages}"></span>
+    <br><br>
+
+    <div class="pagination">
+      <th:block th:if="${currentPage > 0}">
+        <a th:href="@{/grades(page=${currentPage - 1}, size=${pageSize})}" class="pagination-button">Предыдущая</a>
+      </th:block>
+
+      <th:block th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/grades(page=${currentPage + 1}, size=${pageSize})}" class="pagination-button">Следующая</a>
+      </th:block>
+    </div>
+  </div>
+</div>
+<a href="/">Вернуться на главную</a>
+</body>
+</html>

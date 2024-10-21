@@ -1,23 +1,35 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Список студентов</title>
   <link rel="stylesheet" href="/styles.css"/>
 </head>
 <body>
-<h1>Список студентов</h1>
+<h1 style="text-align: center">Список студентов</h1>
 
 <h2>Создать студента</h2>
 
-<form action="/students/add" method="post">
-  <input type="text" name="name" placeholder="Имя" required>
-  <input type="text" name="lastName" placeholder="Фамилия" required>
-  <input type="text" name="firstName" placeholder="Отчество" required>
-  <input type="text" name="middleName" placeholder="Дополнительное имя" required>
-  <input type="text" name="averageGrade" placeholder="Средний балл" required/>
-  <input type="text" name="university" placeholder="Университет" required/>
-  <input type="text" name="course" placeholder="Курс" required/>
+<form action="/students/addOrUpdate" method="post" th:object="${student}">
+  <select th:field="*{university.id}" required>
+    <option value="">Выберите университет</option>
+    <th:block th:each="uni : ${availableUniversities}">
+      <option th:value="${uni.id}" th:text="${uni.name}"></option>
+    </th:block>
+  </select>
+
+  <select th:field="*{grade.id}" required>
+    <option value="">Выберите оценку</option>
+    <th:block th:each="grade_el : ${availableGrades}">
+      <option th:value="${grade_el.id}" th:text="${grade_el.gradeContent}"></option>
+    </th:block>
+  </select>
+
+  <input type="text" th:field="*{name}" placeholder="Имя" required>
+  <input type="text" th:field="*{lastName}" placeholder="Фамилия" required>
+  <input type="text" th:field="*{firstName}" placeholder="Отчество" required>
+  <input type="text" th:field="*{middleName}" placeholder="Дополнительное имя" required>
+
   <button type="submit">Добавить студента</button>
 </form>
 
@@ -42,25 +54,16 @@
   <select id="university" name="university">
     <option value="" selected>Все университеты</option>
     <th:block th:each="uni : ${availableUniversities}">
-      <option th:value="${uni}" th:text="${uni}"></option>
+      <option th:value="${uni.name}" th:text="${uni.name}"></option>
     </th:block>
   </select>
 
-  <!-- Выпадающий список для фильтрации по курсу -->
-  <label for="course">Курс:</label>
-  <select id="course" name="course">
-    <option value="" selected>Все курсы</option>
-    <th:block th:each="course : ${availableCourses}">
-      <option th:value="${course}" th:text="${course}"></option>
-    </th:block>
-  </select>
-
-  <!-- Выпадающий список для фильтрации по среднему баллу -->
-  <label for="averageGrade">Средний балл:</label>
-  <select id="averageGrade" name="averageGrade">
+  <!-- Выпадающий список для фильтрации по оценке -->
+  <label for="grade">Оценка:</label>
+  <select id="grade" name="grade">
     <option value="" selected>Все оценки</option>
     <th:block th:each="grade : ${availableGrades}">
-      <option th:value="${grade}" th:text="${grade}"></option>
+      <option th:value="${grade.gradeContent}" th:text="${grade.gradeContent}"></option>
     </th:block>
   </select>
 
@@ -71,16 +74,28 @@
   <th:block th:each="student : ${students}">
     <li>
       <span th:text="${student.name} + ' ' + ${student.lastName} + ' ' + ${student.firstName} + ' ' + ${student.middleName} +
-' ' + ${student.averageGrade} + ' ' + ${student.course} + ' ' + ${student.university}"></span>
-      <form action="/students/update" method="post" style="display:inline;">
+' ' + ' ' + ${student.university.name} + ' ' + ${student.grade?.gradeContent}"></span>
+      <form action="/students/addOrUpdate" method="post" style="display:inline;">
         <input type="hidden" name="id" th:value="${student.id}"/>
+        <select name="university.id" required>
+          <option value="">Выберите университет</option>
+          <th:block th:each="uni : ${availableUniversities}">
+            <option th:value="${uni.id}" th:selected="${student.university.id == uni.id}" th:text="${uni.name}"></option>
+          </th:block>
+        </select>
+
+        <select name="grade.id" required>
+          <option value="">Выберите оценку</option>
+          <th:block th:each="grade : ${availableGrades}">
+            <option th:value="${grade.id}" th:selected="${student.grade == grade.id}" th:text="${grade.gradeContent}"></option>
+          </th:block>
+        </select>
+
         <input type="text" name="name" placeholder="Имя" th:value="${student.name}"/>
         <input type="text" name="lastName" placeholder="Фамилия" th:value="${student.lastName}" required/>
         <input type="text" name="firstName" placeholder="Отчество" th:value="${student.firstName}" required/>
         <input type="text" name="middleName" placeholder="Дополнительное имя" th:value="${student.middleName}" required/>
-        <input type="text" name="averageGrade" placeholder="Средний балл" th:value="${student.averageGrade}" required/>
-        <input type="text" name="university" placeholder="Университет" th:value="${student.course}" required/>
-        <input type="text" name="course" placeholder="Курс" th:value="${student.university}" required/>
+
         <button type="submit">Обновить</button>
       </form>
 
@@ -95,8 +110,9 @@
     </li>
   </th:block>
 </ul>
+
 <br><br>
-<h2>Множественное удаление студентов</h2>
+<h2>Удаление студентов</h2>
 <form action="/students/deleteMultiple" method="post">
   <ul>
     <th:block th:each="student : ${students}">
@@ -125,7 +141,6 @@
     </div>
   </div>
 </div>
-
 <a href="/">Вернуться на главную</a>
 </body>
 </html>

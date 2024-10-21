@@ -1,7 +1,8 @@
 package com.example.uchebpracticaspring.service
 
 import com.example.uchebpracticaspring.model.StudentModel
-import com.example.uchebpracticaspring.repository.InMemoryStudentRepository
+import com.example.uchebpracticaspring.repository.StudentRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -11,42 +12,38 @@ import org.springframework.stereotype.Service
 //так же мы тут можем настроить инкапсуляцию
 //А если простыми словами тут происходит разделенние запросов от контроллера к сервису
 @Service
-class InMemoryStudentServiceImpl(private val studentRepository: InMemoryStudentRepository) : StudentService {
+class StudentServiceImpl @Autowired constructor(private val studentRepository: StudentRepository) : StudentService {
     override fun findAllStudent(): List<StudentModel?> {
-        return studentRepository.findAllStudents()
+        return studentRepository.findAll()
     }
 
     override fun findStudentById(id: Int): StudentModel? {
-        return studentRepository.findStudentById(id)
+        return studentRepository.findById(id).orElseThrow()
     }
 
     override fun addStudent(student: StudentModel): StudentModel? {
-        return studentRepository.addStudent(student)
-    }
-
-    override fun updateStudent(student: StudentModel): StudentModel? {
-        return studentRepository.updateStudent(student)
+        return studentRepository.saveAndFlush(student)
     }
 
     override fun deleteStudent(id: Int) {
-        studentRepository.deleteStudent(id)
+        studentRepository.deleteById(id)
     }
 
-    override fun findStudentByName(name: String?, lastName: String?, firstName: String?, middleName: String?): List<StudentModel?> {
+    override fun findStudentByName(name: String?, lastName: String?, firstName: String?, middleName: String?): List<StudentModel> {
         return studentRepository.findStudentByName(name, lastName, firstName, middleName)
     }
 
-    override fun deleteMultipleStudents(studentIds: List<Int>?) {
-        if (studentIds!!.isNotEmpty()) {
-            studentRepository.deleteMultipleStudents(studentIds)
-        }
+    override fun deleteMultipleStudents(studentIds: List<Int>) {
+        studentRepository.deleteMultipleStudents(studentIds)
     }
 
     override fun logicalDeleteStudent(id: Int) {
-        studentRepository.logicalDeleteStudent(id)
+        val student = studentRepository.findById(id).orElseThrow()
+        student.isDeleted = true
+        studentRepository.save(student)
     }
 
     override fun findPaginatedStudents(pageable: Pageable): Page<StudentModel?> {
-        return studentRepository.findPaginatedStudents(pageable)
+        return studentRepository.findAll(pageable)
     }
 }
