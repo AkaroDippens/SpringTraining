@@ -55,6 +55,7 @@ class SecurityConfig @Autowired constructor(
                 .requestMatchers("/register", "/login").permitAll()
                 .requestMatchers( "/teachers").hasAuthority("ADMIN")
                 .requestMatchers( "/students").hasAuthority("MANAGER")
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
         }
             .formLogin { form ->

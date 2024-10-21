@@ -18,5 +18,5 @@ data class UserModel(
     @ElementCollection(targetClass = RoleEnum::class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = [JoinColumn(name = "user_id")])
     @Enumerated(EnumType.STRING)
-    var roles: Set<RoleEnum> = setOf()
+    var roles: Set<RoleEnum>? = null
 )
