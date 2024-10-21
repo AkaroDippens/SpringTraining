@@ -41,6 +41,7 @@ class StudentController {
         model.addAttribute("availableUniversities", availableUniversities)
         model.addAttribute("availableGrades", availableGrades)
         model.addAttribute("students", filteredStudents)
+        model.addAttribute("allStudents", studentsPage?.content)
         model.addAttribute("currentPage", studentsPage?.number)
         model.addAttribute("totalPages", studentsPage?.totalPages)
         model.addAttribute("pageSize", size)

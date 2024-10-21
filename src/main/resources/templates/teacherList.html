@@ -90,7 +90,7 @@
 <h2>Удаление учителей</h2>
 <form action="/teachers/deleteMultiple" method="post">
   <ul>
-    <th:block th:each="teacher : ${teachers}">
+    <th:block th:each="teacher : ${allTeachers}">
       <li>
         <input type="checkbox" name="teacherIds" th:value="${teacher.id}">
         <span th:text="${teacher.name} + ' ' + ${teacher.lastName} + ' ' + ${teacher.subject} + ' ' + ${teacher.age} +

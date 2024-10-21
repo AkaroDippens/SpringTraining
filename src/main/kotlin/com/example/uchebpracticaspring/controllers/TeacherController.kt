@@ -35,6 +35,7 @@ class TeacherController {
 
         model.addAttribute("availableSubjects", availableSubjects)
         model.addAttribute("teachers", filteredTeachers)
+        model.addAttribute("allTeachers", teachersPage?.content)
         model.addAttribute("currentPage", teachersPage?.number)
         model.addAttribute("totalPages", teachersPage?.totalPages)
         model.addAttribute("pageSize", size)
