@@ -30,6 +30,7 @@ class TeacherController {
         val teachers = teachersPage?.content
         model.addAttribute("availableSubjects", availableSubjects)
         model.addAttribute("teachers", teachers)
+        model.addAttribute("allTeachers", teachersPage?.filter { !it!!.isDeleted })
         model.addAttribute("currentPage", teachersPage?.number)
         model.addAttribute("totalPages", teachersPage?.totalPages)
         model.addAttribute("pageSize", size)

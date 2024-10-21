@@ -35,7 +35,7 @@ class InMemoryStudentRepository {
     }
 
     fun findAllStudents(): List<StudentModel?> {
-        return students.filter { it?.isDeleted != true }
+        return students
     }
 
     fun findStudentById(id: Int): StudentModel? {

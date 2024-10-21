@@ -33,7 +33,7 @@ class InMemoryTeacherRepository {
     }
 
     fun findAllTeachers(): List<TeacherModel?> {
-        return teachers.filter { it?.isDeleted != true }
+        return teachers
     }
 
     fun findTeacherById(id: Int): TeacherModel? {
