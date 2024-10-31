@@ -1,0 +1,6 @@
+package repository
+
+import model.Analyze
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface AnalyzeRepository : JpaRepository<Analyze, Long>
