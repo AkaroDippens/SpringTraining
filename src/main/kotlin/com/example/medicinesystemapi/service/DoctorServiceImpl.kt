@@ -1,0 +1,52 @@
+package com.example.medicinesystemapi.service
+
+import com.example.medicinesystemapi.model.Doctor
+import com.example.medicinesystemapi.repository.DoctorRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+
+@Service
+class DoctorServiceImpl(
+    private val doctorRepository: DoctorRepository
+) : DoctorService {
+
+    override fun findAllDoctors(pageable: Pageable): Page<Doctor> {
+        return doctorRepository.findAll(pageable)
+    }
+
+    override fun findAllDoctorsList(): List<Doctor?> {
+        return doctorRepository.findAll()
+    }
+
+    override fun findDoctorById(id: Long?): Doctor? {
+        return doctorRepository.findById(id ?: 0).orElse(null)
+    }
+
+    override fun findDoctorByName(fullName: String?): List<Doctor> {
+        return doctorRepository.findAll().filter { it.fullName == fullName }
+    }
+
+    override fun addDoctor(doctor: Doctor): Doctor? {
+        return doctorRepository.save(doctor)
+    }
+
+    override fun updateDoctor(id: Long, doctor: Doctor): Doctor? {
+        return doctorRepository.save(doctor)
+    }
+
+    override fun deleteDoctor(id: Long) {
+        doctorRepository.deleteById(id)
+    }
+
+    override fun deleteMultipleDoctors(doctorIds: List<Long>) {
+        doctorRepository.deleteAllById(doctorIds)
+    }
+
+    override fun logicalDeleteDoctor(id: Long) {
+        val doctor = doctorRepository.findById(id).orElse(null)
+        doctor?.let {
+            doctorRepository.save(it)
+        }
+    }
+}
