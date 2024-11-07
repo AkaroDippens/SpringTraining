@@ -30,7 +30,8 @@ class UserServiceImpl(
     }
 
     override fun addUser(user: User): User? {
-        user.idRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
+        val defaultRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
+        user.idRole = defaultRole
         return userRepository.save(user)
     }
 

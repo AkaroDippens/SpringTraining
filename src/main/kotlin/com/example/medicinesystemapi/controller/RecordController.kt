@@ -2,10 +2,12 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Record
 import com.example.medicinesystemapi.service.RecordService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Record", description = "Operations related to records")
 @RestController
 @RequestMapping("/api/records")
 class RecordController(private val recordService: RecordService) {

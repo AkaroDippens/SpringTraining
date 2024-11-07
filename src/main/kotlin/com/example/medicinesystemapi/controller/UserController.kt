@@ -5,12 +5,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.medicinesystemapi.service.UserService
+import io.swagger.v3.oas.annotations.tags.Tag
 
+@Tag(name = "User", description = "Operations related to users")
+@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
 class UserController(private val userService: UserService) {
 
-    @GetMapping
+    /*@GetMapping
     fun getAllUsers(): ResponseEntity<List<User?>> {
         val users = userService.findAllUsersList()
         return if (users.isEmpty()) {
@@ -28,7 +31,7 @@ class UserController(private val userService: UserService) {
         } else {
             ResponseEntity.ok(user)
         }
-    }
+    }*/
 
     @GetMapping("/byname/{fullName}")
     fun getUserByName(@PathVariable fullName: String): ResponseEntity<List<User>> {

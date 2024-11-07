@@ -2,10 +2,12 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Role
 import com.example.medicinesystemapi.service.RoleService
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+@Tag(name = "Role", description = "Operations related to roles")
 @RestController
 @RequestMapping("/api/roles")
 class RoleController(private val roleService: RoleService) {
