@@ -1,0 +1,269 @@
+/* Основной контейнер */
+.medical-card-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    animation: fadeIn 0.5s ease;
+    font-family: 'Poppins', sans-serif; /* Элегантный современный шрифт */
+}
+
+/* Заголовок раздела */
+.section-title {
+    color: #4545a9;
+    font-family: 'Roboto', sans-serif;
+    font-size: 2.5rem; /* Оптимальный размер */
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600; /* Чуть более жирный шрифт */
+    letter-spacing: 1px; /* Легкое увеличение межбуквенного расстояния */
+}
+
+/* Заголовок раздела */
+.section-title-h2 {
+    color: #4545a9;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem; /* Оптимальный размер */
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600; /* Чуть более жирный шрифт */
+    letter-spacing: 1px; /* Легкое увеличение межбуквенного расстояния */
+}
+
+/* Карточка пациента */
+.patient-info {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-item {
+    margin-bottom: 1rem;
+}
+
+.info-label {
+    color: #718096;
+    font-size: 0.875rem; /* Мелкий текст */
+    margin-bottom: 0.25rem;
+    text-transform: uppercase; /* Для контрастности */
+    font-weight: 500; /* Полужирный */
+}
+
+.info-value {
+    color: #2d3748;
+    font-weight: 400; /* Нормальный вес текста */
+    font-size: 1rem; /* Умеренный размер */
+}
+
+/* Медицинская история */
+.medical-history {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.history-item {
+    border-left: 3px solid #4545a9;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f7fafc;
+    border-radius: 0 4px 4px 0;
+}
+
+.history-date {
+    color: #718096;
+    font-size: 0.875rem; /* Мелкий текст */
+    margin-bottom: 0.5rem;
+}
+
+.history-doctor {
+    color: #2d3748;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 1rem; /* Умеренный размер */
+}
+
+.history-diagnosis {
+    color: #4a5568;
+    font-size: 0.875rem; /* Мелкий текст */
+}
+
+/* Вкладки */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.tab {
+    padding: 0.5rem 1rem; /* Меньший отступ */
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem; /* Чуть меньше */
+    font-weight: 500;
+}
+
+.tab.active {
+    background: #0061ff;
+    color: white;
+}
+
+.tab:hover:not(.active) {
+    background: #f7fafc;
+}
+
+/* Кнопка */
+.medical-card-container .btn {
+    margin-top: 1.5rem;
+    width: auto;
+    padding: 0.5rem 1.5rem; /* Уменьшенный размер */
+    background: linear-gradient(135deg, #0061ff, #48daeb);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem; /* Оптимальный размер */
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.medical-card-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Модальное окно */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Черный фон с прозрачностью */
+    animation: fadeIn 0.5s ease;
+}
+
+/* Модальная содержимая часть */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 2rem;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Кнопка закрытия */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Заголовок модального окна */
+.section-title-h2 {
+    color: #4545a9;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Лейблы и текстовые поля */
+label {
+    display: block;
+    color: #718096;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #0061ff;
+    outline: none;
+}
+
+/* Кнопки */
+.btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, #0061ff, #48daeb);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Анимация */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        font-size: 0.875rem; /* Меньше на мобильных */
+        width: 100%; /* Растягиваем */
+    }
+
+    .section-title {
+        font-size: 1.5rem; /* Уменьшаем заголовок */
+    }
+}

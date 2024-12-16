@@ -30,6 +30,26 @@ class DoctorController(private val doctorService: DoctorService) {
         }
     }
 
+    @GetMapping("byspecialization/{id}")
+    fun getDoctorBySpecializationId(@PathVariable id: Long): ResponseEntity<List<Doctor>?> {
+        val doctor = doctorService.findDoctorBySpecializationId(id)
+        return if (doctor == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(doctor)
+        }
+    }
+
+    @GetMapping("byfullname/{fullName}")
+    fun getDoctorByFullName(@PathVariable fullName: String): ResponseEntity<Doctor?> {
+        val doctor = doctorService.findDoctorByFullName(fullName)
+        return if (doctor == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(doctor)
+        }
+    }
+
     @GetMapping("/byname/{fullName}")
     fun getDoctorByName(@PathVariable fullName: String): ResponseEntity<List<Doctor>> {
         val doctors = doctorService.findDoctorByName(fullName)
@@ -65,6 +85,19 @@ class DoctorController(private val doctorService: DoctorService) {
         val updatedDoctor = doctorService.updateDoctor(id, doctor)
         return if (updatedDoctor == null) {
             ResponseEntity.internalServerError().build()
+        } else {
+            ResponseEntity.ok(updatedDoctor)
+        }
+    }
+
+    @PutMapping("/{id}/specialization")
+    fun updateDoctorSpecialization(
+        @PathVariable id: Long,
+        @RequestParam specializationId: Long
+    ): ResponseEntity<Doctor?> {
+        val updatedDoctor = doctorService.updateDoctorSpecialization(id, specializationId)
+        return if (updatedDoctor == null) {
+            ResponseEntity.notFound().build()
         } else {
             ResponseEntity.ok(updatedDoctor)
         }

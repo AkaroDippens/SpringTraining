@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <link rel="stylesheet" href="/scripts/styles/login_style.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>MedSystem</h2>
+        <h2>Авторизация</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" name="mhiPolicy" id="mhiPolicy" placeholder="Полис ОМС" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" id="password" placeholder="Пароль" class="form-control" required>
+            </div>
+            <button type="button" class="btn" onclick="login()">Авторизоваться</button>
+        </form>
+        <div style="text-align: center; margin-top: 15px"><a href="/register">Нет аккаунта? Зарегистрироваться</a></div>
+    </div>
+    <script src="/scripts/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список специализаций</title>
+    <link rel="stylesheet" href="/scripts/styles/specialization-table.css">
+    <link rel="stylesheet" href="/scripts/styles/style.css">
+    <script src="/scripts/specialization-table.js" defer></script>
+    <script src="/scripts/header.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+    <div class="container">
+        <h1 class="title">СПИСОК СПЕЦИАЛИЗАЦИЙ</h1>
+
+        <!-- Кнопка для добавления новой специализации -->
+        <button id="add-specialization-btn" class="btn">Добавить специализацию</button>
+
+        <!-- Таблица со специализациями -->
+        <table class="specialization-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название специализации</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="specialization-table-body">
+                <!-- Данные будут добавляться динамически через JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Модальное окно с деталями специализации -->
+    <div id="specialization-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal">&times;</span>
+            <h2>Детали специализации</h2>
+            <p id="specialization-detail-id"><strong>ID:</strong> </p>
+            <p id="specialization-detail-name"><strong>Название специализации:</strong> </p>
+            <button id="edit-specialization-btn" class="btn">Редактировать</button>
+            <button id="delete-specialization-btn" class="btn">Удалить</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования специализации -->
+    <div id="specialization-form-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-form-modal">&times;</span>
+            <h2 id="form-title">Добавить специализацию</h2>
+            <form id="specialization-form">
+                <input type="hidden" id="specialization-id" name="id">
+                <label for="specialization-name">Название специализации:</label>
+                <input type="text" id="specialization-name" name="specializationName" required>
+                <button type="submit" class="btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:insert="footer :: footer"></div>
+</body>
+</html>

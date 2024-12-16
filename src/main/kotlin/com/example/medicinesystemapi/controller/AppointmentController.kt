@@ -30,6 +30,26 @@ class AppointmentController(private val appointmentService: AppointmentService) 
         }
     }
 
+    @GetMapping("/record/{recordId}")
+    fun getAppointmentByRecordId(@PathVariable recordId: Int): ResponseEntity<Appointment> {
+        val appointment = appointmentService.findAppointmentByRecordId(recordId)
+        return if (appointment != null) {
+            ResponseEntity.ok(appointment)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/doctor/{doctorId}")
+    fun getAppointmentsByRecordId(@PathVariable doctorId: Int): ResponseEntity<List<Appointment>> {
+        val appointment = appointmentService.findAppointmentsByDoctorId(doctorId)
+        return if (appointment != null) {
+            ResponseEntity.ok(appointment)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
     @PostMapping
     fun addAppointment(@RequestBody appointment: Appointment): ResponseEntity<Appointment?> {
         if (appointment.id != null) {
@@ -44,12 +64,18 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @PutMapping("/{id}")
-    fun updateAppointment(@PathVariable id: Long, @RequestBody appointment: Appointment): ResponseEntity<Appointment?> {
-        if (appointment.id == null) {
+    fun updateAppointment(@PathVariable id: Long, @RequestBody partialUpdate: Map<String, Any>): ResponseEntity<Appointment?> {
+        if (id == null) {
             return ResponseEntity.badRequest().build()
         }
-        appointmentService.findAppointmentById(id) ?: return ResponseEntity.notFound().build()
-        val updatedAppointment = appointmentService.updateAppointment(id, appointment)
+
+        val existingAppointment = appointmentService.findAppointmentById(id) ?: return ResponseEntity.notFound().build()
+
+        partialUpdate["reason"]?.let { existingAppointment.reason = it as String }
+        partialUpdate["diagnosis"]?.let { existingAppointment.diagnosis = it as String }
+        partialUpdate["recommendations"]?.let { existingAppointment.recommendations = it as String }
+
+        val updatedAppointment = appointmentService.updateAppointment(id, existingAppointment)
         return if (updatedAppointment == null) {
             ResponseEntity.internalServerError().build()
         } else {

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список пользователей</title>
+    <link rel="stylesheet" href="/scripts/styles/user-table.css">
+    <link rel="stylesheet" href="/scripts/styles/style.css">
+    <script src="/scripts/user-table.js" defer></script>
+    <script src="/scripts/header.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+    <div class="container">
+        <h1 class="section-title">СПИСОК ПОЛЬЗОВАТЕЛЕЙ</h1>
+
+        <div class="filters">
+            <label for="role-filter">Фильтр по роли:</label>
+            <select id="role-filter">
+                <option value="">Все роли</option>
+                <option value="DOCTOR">Доктор</option>
+                <option value="ADMIN">Администратор</option>
+                <option value="USER">Пациент</option>
+            </select>
+            <button class="btn" id="apply-role-filter">Применить</button>
+            <button class="btn" id="reset-role-filter">Сбросить</button>
+        </div>
+
+        <!-- Таблица с пользователями -->
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th data-sort="id">ID</th>
+                    <th data-sort="fullName">ФИО</th>
+                    <th data-sort="contactNumber">Номер телефона</th>
+                    <th data-sort="mhiPolicy">Полис ОМС</th>
+                    <th data-sort="birthDate">Дата рождения</th>
+                    <th data-sort="roleName">Роль</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- Данные будут добавляться динамически через JavaScript -->
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Модальное окно с деталями пользователя -->
+    <div id="user-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-modal">&times;</span>
+            <h2>Детали пользователя</h2>
+            <p id="user-detail-id"><strong>ID:</strong> </p>
+            <p id="user-detail-full-name"><strong>ФИО:</strong> </p>
+            <p id="user-detail-contact"><strong>Номер телефона:</strong> </p>
+            <p id="user-detail-policy"><strong>Полис ОМС:</strong> </p>
+            <p id="user-detail-birth-date"><strong>Дата рождения:</strong> </p>
+            <p id="user-detail-role"><strong>Роль:</strong> </p>
+        </div>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
+    <div th:insert="footer :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приёмы у доктора</title>
+    <link rel="stylesheet" href="/scripts/styles/style.css">
+    <link rel="stylesheet" href="/scripts/styles/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/scripts/header.js" defer></script>
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+
+    <h1 class="section-title">ПРИЁМЫ У ДОКТОРА</h1>
+
+    <!-- Список приёмов -->
+    <div class="medical-card-container" id="appointments-container">
+        <h2 class="section-title-h2">МОИ ПРИЁМЫ</h2>
+        <div id="appointments-list"></div>
+    </div>
+
+    <!-- Модальное окно для отчёта о приёме -->
+    <div id="appointment-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <h2 class="section-title-h2">Детали приёма</h2>
+            <label for="reason">Причина:</label>
+            <textarea id="reason" name="reason"></textarea>
+            <label for="diagnosis">Диагноз:</label>
+            <textarea id="diagnosis" name="diagnosis"></textarea>
+            <label for="recommendations">Рекомендации:</label>
+            <textarea id="recommendations" name="recommendations"></textarea>
+            <button type="button" id="close-appointment-modal" class="btn">Закрыть</button>
+            <button type="button" id="save-changes" class="btn">Сохранить изменения</button>
+        </div>
+    </div>
+
+    <div th:insert="footer :: footer"></div>
+    <script type="module" src="/scripts/doctor-appointments.js"></script>
+</body>
+</html>

@@ -23,6 +23,9 @@ class MedicalRecordServiceImpl(
         return medicalRecordRepository.findById(id ?: 0).orElse(null)
     }
 
+    override fun findMedicalRecordByUserId(id: Long?): MedicalRecord? {
+        return medicalRecordRepository.findByIdUser_Id(id)
+    }
     override fun findMedicalRecordsByUserId(userId: Long?): List<MedicalRecord> {
         TODO("Not yet implemented")
     }

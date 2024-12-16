@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Медицинская карта - MedSystem</title>
+    <link rel="stylesheet" href="/scripts/styles/style.css">
+    <link rel="stylesheet" href="/scripts/styles/profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/scripts/header.js" defer></script>
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+    <div class="medical-card-container">
+        <h1 class="section-title">МЕДИЦИНСКАЯ КАРТА</h1>
+
+        <div class="patient-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">ФИО</div>
+                   <div class="info-value" id="fullName"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Дата рождения</div>
+                    <div class="info-value" id="birthDate"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Номер полиса ОМС</div>
+                    <div class="info-value" id="mhiPolicy"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="appointments-list">
+            <div id="upcoming-appointments">
+                <h3 class="section-title-h2">ПРЕДСТОЯЩИЕ</h3>
+                <!-- Здесь будут генерироваться записи -->
+            </div>
+            <div id="past-appointments">
+                <h3 class="section-title-h2">ПРОШЕДШИЕ</h3>
+                <!-- Здесь будут генерироваться завершённые записи -->
+            </div>
+        </div>
+
+    <div id="appointment-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-appointment-modal" class="close">&times;</span>
+            <h2>Подробности приёма</h2>
+            <div id="appointment-details">
+                <p><strong>Диагноз:</strong> <span id="diagnosis"></span></p>
+                <p><strong>Рекомендации:</strong> <span id="recommendations"></span></p>
+            </div>
+            <button id="close-modal" class="btn">Закрыть</button>
+        </div>
+    </div>
+    </div>
+
+    <div th:insert="footer :: footer"></div>
+    <script src="/scripts/profile.js"></script>
+    <script type="module" src="/scripts/export_to_csv.js"></script>
+</body>
+</html>

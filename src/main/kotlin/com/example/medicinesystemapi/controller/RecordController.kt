@@ -32,11 +32,34 @@ class RecordController(private val recordService: RecordService) {
         }
     }
 
+    @GetMapping("/byuser/{id}")
+    fun getRecordByUserId(@PathVariable id: Long): ResponseEntity<List<Record>?> {
+        val record = recordService.findRecordsByUserId(id.toInt())
+        return if (record == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(record)
+        }
+    }
+
+    @GetMapping("/bydoctor/{doctorId}")
+    fun getRecordByDoctorId(@PathVariable doctorId: Long): ResponseEntity<List<Record>?> {
+        val record = recordService.findRecordsByDoctorId(doctorId.toInt())
+        return if (record == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(record)
+        }
+    }
+
     @PostMapping
     fun addRecord(@RequestBody record: Record): ResponseEntity<Record?> {
-        if (record.id != null) {
-            return ResponseEntity.badRequest().build()
+        // Проверяем, занято ли время
+        val existingRecord = recordService.findByDoctorAndTime(record.idDoctor?.id!!.toLong(), record.appointmentDate!!)
+        if (existingRecord != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null)
         }
+
         val savedRecord = recordService.addRecord(record)
         return if (savedRecord == null) {
             ResponseEntity.internalServerError().build()

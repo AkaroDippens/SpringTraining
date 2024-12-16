@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/scripts/styles/appointment.css?v=1.0.1">
+    <link rel="stylesheet" href="/scripts/styles/style.css?v=1.0.1">
+    <script type="module" src="/scripts/appointment_and_record.js" defer></script>
+    <script src="/scripts/header.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Запись на приём</title>
+
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+        <div class="medical-card-container">
+        <h1 class="section-title">ЗАПИСЬ НА ПРИЁМ</h1>
+
+        <!-- Секция специализаций -->
+        <section id="specialization-section" class="section">
+            <h2 class="section-title-h2">Выберите специализацию</h2>
+            <div id="specialization-list" class="info-grid">
+                <!-- Кнопки специализаций будут добавлены через JS -->
+            </div>
+        </section>
+
+        <!-- Секция врачей -->
+        <section id="doctor-section" class="section" style="display: none;">
+            <h2 class="section-title-h2">Выберите врача</h2>
+            <div id="doctor-list" class="info-grid">
+                <!-- Кнопки врачей будут добавлены через JS -->
+            </div>
+        </section>
+
+        <!-- Секция выбора даты и времени -->
+        <section id="datetime-section" class="section" style="display: none;">
+            <h2 class="section-title-h2">Выберите дату</h2>
+            <div class="date-grid" id="date-grid">
+                <!-- Кнопки дат будут добавлены через JS -->
+            </div>
+
+            <h2 class="section-title-h2">Выберите время</h2>
+            <div class="time-grid" id="time-grid">
+                <!-- Кнопки времени будут добавлены через JS -->
+            </div>
+        </section>
+
+        <!-- Кнопка подтверждения -->
+        <button id="confirm-record" class="confirm-btn" style="display: none;">
+            Подтвердить запись
+        </button>
+    </div>
+    <div th:insert="footer :: footer"></div>
+
+    <script type="module" src="/scripts/appointment_and_record.js"></script>
+</body>
+</html>

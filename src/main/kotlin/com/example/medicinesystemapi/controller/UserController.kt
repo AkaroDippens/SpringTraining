@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import com.example.medicinesystemapi.service.UserService
 import io.swagger.v3.oas.annotations.tags.Tag
+import com.example.medicinesystemapi.validation.Validations
 
 @Tag(name = "User", description = "Operations related to users")
 @CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
 class UserController(private val userService: UserService) {
+    val validations = Validations()
 
     /*@GetMapping
     fun getAllUsers(): ResponseEntity<List<User?>> {
@@ -53,20 +55,40 @@ class UserController(private val userService: UserService) {
         }
     }
 
-    @PostMapping
-    fun addUser(@RequestBody user: User): ResponseEntity<User?> {
+    @PostMapping("/add")
+    fun addUser(@RequestBody user: User): ResponseEntity<Any?> {
+        val errors = mutableMapOf<String, String>()
+
         if (user.id != null) {
             return ResponseEntity.badRequest().build()
         }
         if (user.fullName == null || user.fullName.isNullOrEmpty()) {
             return ResponseEntity.badRequest().build()
         }
-        val savedUser = userService.addUser(user)
-        return if (savedUser == null) {
-            ResponseEntity.internalServerError().build()
-        } else {
-            ResponseEntity.status(HttpStatus.CREATED).body(savedUser)
+        if (!validations.validatePassword(user.password)) {
+            errors["password"] = "Пароль должен содержать минимум 8 символов, включая заглавную букву, цифру и специальный символ."
+            ResponseEntity.badRequest().body(errors)
         }
+        if (!validations.validateMhiPolicy(user.mhiPolicy)) {
+            errors["mhiPolicy"] = "Полис ОМС должен состоять из 8 цифр."
+            ResponseEntity.badRequest().body(errors)
+        }
+
+        // Если есть ошибки, возвращаем их клиенту
+
+
+        val userExistMHI = userService.findUserByMhiPolicy(user.mhiPolicy)
+        if (userExistMHI != null) {
+            errors["mhiPolicy"] = "Пользователь с таким полисом ОМС уже существует."
+            ResponseEntity.status(HttpStatus.CONFLICT).body(errors)
+        }
+
+        if (errors.isNotEmpty()) {
+            return ResponseEntity.badRequest().body(errors)
+        }
+
+        val savedUser = userService.addUser(user)
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser)
     }
 
     @PutMapping("/{id}")

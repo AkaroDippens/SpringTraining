@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Логи</title>
+    <link rel="stylesheet" href="/scripts/styles/style.css">
+    <link rel="stylesheet" href="/scripts/styles/logs.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/scripts/header.js" defer></script>
+</head>
+<body>
+    <div th:insert="header :: header"></div>
+    <h1 class="section-title">Логи запросов</h1>
+    <div class="actions">
+        <button id="clear-logs-btn" class="action-btn">Очистить все</button>
+        <button id="export-logs-btn" class="action-btn">Экспорт в CSV</button>
+        <input type="file" id="import-logs-input" style="display: none;" accept=".csv">
+        <button id="import-logs-btn" class="action-btn">Импорт в CSV</button>
+    </div>
+    <table id="logs-table">
+        <thead>
+            <tr>
+                <th>Время</th>
+                <th>Метод</th>
+                <th>URL</th>
+                <th>Статус</th>
+                <th>User-Agent</th>
+                <th>IP-адрес</th>
+            </tr>
+        </thead>
+        <tbody id="logs-table-body">
+        </tbody>
+    </table>
+
+    <div id="pagination" class="pagination"></div>
+
+    <div th:insert="footer :: footer"></div>
+    <script src="/scripts/logs.js"></script>
+</body>
+</html>

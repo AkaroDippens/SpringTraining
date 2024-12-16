@@ -1,16 +1,18 @@
 package com.example.medicinesystemapi.service
 
+import com.example.medicinesystemapi.config.PasswordEncoderUtil
 import com.example.medicinesystemapi.model.User
 import com.example.medicinesystemapi.repository.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import com.example.medicinesystemapi.repository.RoleRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
 ) : UserService {
 
     override fun findAllUsers(pageable: Pageable): Page<User> {
@@ -30,9 +32,15 @@ class UserServiceImpl(
     }
 
     override fun addUser(user: User): User? {
-        val defaultRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
-        user.idRole = defaultRole
-        return userRepository.save(user)
+        val userExist = userRepository.findAll().firstOrNull { it.mhiPolicy == user.mhiPolicy }
+        if (user.mhiPolicy != userExist?.mhiPolicy){
+            val defaultRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
+            user.idRole = defaultRole
+
+            user.password = PasswordEncoderUtil.encode(user.password)
+            return userRepository.save(user)
+        }
+        else return null
     }
 
     override fun updateUser(id: Long, user: User): User? {

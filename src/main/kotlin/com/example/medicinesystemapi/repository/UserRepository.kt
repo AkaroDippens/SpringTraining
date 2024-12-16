@@ -3,5 +3,4 @@ package com.example.medicinesystemapi.repository
 import com.example.medicinesystemapi.model.User
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface UserRepository : JpaRepository<User, Long> {
-}
+interface UserRepository : JpaRepository<User, Long>
