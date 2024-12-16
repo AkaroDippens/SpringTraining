@@ -9,7 +9,10 @@ object PasswordEncoderUtil {
         return encoder.encode(password)
     }
 
-    fun matches(rawPassword: String?, encodedPassword: String?): Boolean {
+    fun matches(
+        rawPassword: String?,
+        encodedPassword: String?,
+    ): Boolean {
         return encoder.matches(rawPassword, encodedPassword)
     }
 }

@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class SpecializationServiceImpl(
-    private val specializationRepository: SpecializationRepository
+    private val specializationRepository: SpecializationRepository,
 ) : SpecializationService {
-
     override fun findAllSpecializations(pageable: Pageable): Page<Specialization> {
         return specializationRepository.findAll(pageable)
     }
@@ -31,7 +30,10 @@ class SpecializationServiceImpl(
         return specializationRepository.save(specialization)
     }
 
-    override fun updateSpecialization(id: Long, specialization: Specialization): Specialization? {
+    override fun updateSpecialization(
+        id: Long,
+        specialization: Specialization,
+    ): Specialization? {
         return specializationRepository.save(specialization)
     }
 

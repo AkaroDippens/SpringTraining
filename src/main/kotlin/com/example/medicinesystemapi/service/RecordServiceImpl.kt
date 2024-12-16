@@ -1,8 +1,6 @@
 package com.example.medicinesystemapi.service
 
-import com.example.medicinesystemapi.model.Doctor
 import com.example.medicinesystemapi.model.Record
-import com.example.medicinesystemapi.repository.RecipeRepository
 import com.example.medicinesystemapi.repository.RecordRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -11,9 +9,8 @@ import java.time.Instant
 
 @Service
 class RecordServiceImpl(
-    private val recordRepository: RecordRepository
+    private val recordRepository: RecordRepository,
 ) : RecordService {
-
     override fun findAllRecords(pageable: Pageable): Page<Record> {
         return recordRepository.findAll(pageable)
     }
@@ -38,7 +35,10 @@ class RecordServiceImpl(
         return recordRepository.save(record)
     }
 
-    override fun updateRecord(id: Long, record: Record): Record? {
+    override fun updateRecord(
+        id: Long,
+        record: Record,
+    ): Record? {
         return recordRepository.save(record)
     }
 
@@ -57,7 +57,10 @@ class RecordServiceImpl(
         }
     }
 
-    override fun findByDoctorAndTime(doctorId: Long, appointmentDate: Instant): Record? {
+    override fun findByDoctorAndTime(
+        doctorId: Long,
+        appointmentDate: Instant,
+    ): Record? {
         return recordRepository.findAll()
             .firstOrNull { it.idDoctor?.id == doctorId.toInt() && it.appointmentDate == appointmentDate }
     }

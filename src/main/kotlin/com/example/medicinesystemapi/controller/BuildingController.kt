@@ -1,17 +1,14 @@
 package com.example.medicinesystemapi.controller
 
-
-import com.example.medicinesystemapi.model.Building;
-import com.example.medicinesystemapi.service.BuildingService;
+import com.example.medicinesystemapi.model.Building
+import com.example.medicinesystemapi.service.BuildingService
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-
 
 @RestController
 @RequestMapping("/api/buildings")
 class BuildingController(private val buildingService: BuildingService) {
-
     @GetMapping
     fun getAllBuildings(): ResponseEntity<List<Building?>> {
         val buildings = buildingService.findAllBuildingsList()
@@ -23,7 +20,9 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @GetMapping("/{id}")
-    fun getBuildingById(@PathVariable id: Long): ResponseEntity<Building?> {
+    fun getBuildingById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Building?> {
         val building = buildingService.findBuildingById(id)
         return if (building == null) {
             ResponseEntity.notFound().build()
@@ -33,7 +32,9 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @GetMapping("/byname/{buildingName}")
-    fun getBuildingByName(@PathVariable buildingName: String): ResponseEntity<List<Building>> {
+    fun getBuildingByName(
+        @PathVariable buildingName: String,
+    ): ResponseEntity<List<Building>> {
         val buildings = buildingService.findBuildingByName(buildingName)
         return if (buildings.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -43,7 +44,9 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @GetMapping("/byaddress/{address}")
-    fun getBuildingByAddress(@PathVariable address: String): ResponseEntity<List<Building>> {
+    fun getBuildingByAddress(
+        @PathVariable address: String,
+    ): ResponseEntity<List<Building>> {
         val buildings = buildingService.findBuildingByAddress(address)
         return if (buildings.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -53,7 +56,9 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @PostMapping
-    fun addBuilding(@RequestBody building: Building): ResponseEntity<Building?> {
+    fun addBuilding(
+        @RequestBody building: Building,
+    ): ResponseEntity<Building?> {
         if (building.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -69,7 +74,10 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @PutMapping("/{id}")
-    fun updateBuilding(@PathVariable id: Long, @RequestBody building: Building): ResponseEntity<Building?> {
+    fun updateBuilding(
+        @PathVariable id: Long,
+        @RequestBody building: Building,
+    ): ResponseEntity<Building?> {
         if (building.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -83,14 +91,18 @@ class BuildingController(private val buildingService: BuildingService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteBuilding(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteBuilding(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         buildingService.findBuildingById(id) ?: return ResponseEntity.notFound().build()
         buildingService.deleteBuilding(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleBuildings(@RequestBody buildingIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleBuildings(
+        @RequestBody buildingIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (buildingIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

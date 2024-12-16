@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class AnalyzeServiceImpl(
-    private val analyzeRepository: AnalyzeRepository
+    private val analyzeRepository: AnalyzeRepository,
 ) : AnalyzeService {
-
     override fun findAllAnalyzes(pageable: Pageable): Page<Analyze> {
         return analyzeRepository.findAll(pageable)
     }
@@ -27,7 +26,10 @@ class AnalyzeServiceImpl(
         return analyzeRepository.save(analyze)
     }
 
-    override fun updateAnalyze(id: Long, analyze: Analyze): Analyze? {
+    override fun updateAnalyze(
+        id: Long,
+        analyze: Analyze,
+    ): Analyze? {
         return analyzeRepository.save(analyze)
     }
 

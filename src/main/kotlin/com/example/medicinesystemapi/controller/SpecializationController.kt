@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/specializations")
 class SpecializationController(private val specializationService: SpecializationService) {
-
     @GetMapping
     fun getAllSpecializations(): ResponseEntity<List<Specialization?>> {
         val specializations = specializationService.findAllSpecializationsList()
@@ -23,7 +22,9 @@ class SpecializationController(private val specializationService: Specialization
     }
 
     @GetMapping("/{id}")
-    fun getSpecializationById(@PathVariable id: Long): ResponseEntity<Specialization?> {
+    fun getSpecializationById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Specialization?> {
         val specialization = specializationService.findSpecializationById(id)
         return if (specialization == null) {
             ResponseEntity.notFound().build()
@@ -33,7 +34,9 @@ class SpecializationController(private val specializationService: Specialization
     }
 
     @GetMapping("/byname/{specializationName}")
-    fun getSpecializationByName(@PathVariable specializationName: String): ResponseEntity<List<Specialization>> {
+    fun getSpecializationByName(
+        @PathVariable specializationName: String,
+    ): ResponseEntity<List<Specialization>> {
         val specializations = specializationService.findSpecializationByName(specializationName)
         return if (specializations.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -43,7 +46,9 @@ class SpecializationController(private val specializationService: Specialization
     }
 
     @PostMapping
-    fun addSpecialization(@RequestBody specialization: Specialization): ResponseEntity<Specialization?> {
+    fun addSpecialization(
+        @RequestBody specialization: Specialization,
+    ): ResponseEntity<Specialization?> {
         if (specialization.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -59,7 +64,10 @@ class SpecializationController(private val specializationService: Specialization
     }
 
     @PutMapping("/{id}")
-    fun updateSpecialization(@PathVariable id: Long, @RequestBody specialization: Specialization): ResponseEntity<Specialization?> {
+    fun updateSpecialization(
+        @PathVariable id: Long,
+        @RequestBody specialization: Specialization,
+    ): ResponseEntity<Specialization?> {
         if (specialization.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -73,14 +81,18 @@ class SpecializationController(private val specializationService: Specialization
     }
 
     @DeleteMapping("/{id}")
-    fun deleteSpecialization(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteSpecialization(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         specializationService.findSpecializationById(id) ?: return ResponseEntity.notFound().build()
         specializationService.deleteSpecialization(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleSpecializations(@RequestBody specializationIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleSpecializations(
+        @RequestBody specializationIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (specializationIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

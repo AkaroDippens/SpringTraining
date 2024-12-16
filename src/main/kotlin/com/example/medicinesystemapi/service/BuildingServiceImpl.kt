@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class BuildingServiceImpl(
-    private val buildingRepository: BuildingRepository
+    private val buildingRepository: BuildingRepository,
 ) : BuildingService {
-
     override fun findAllBuildings(pageable: Pageable): Page<Building> {
         return buildingRepository.findAll(pageable)
     }
@@ -31,7 +30,10 @@ class BuildingServiceImpl(
         return buildingRepository.save(building)
     }
 
-    override fun updateBuilding(id: Long, building: Building): Building? {
+    override fun updateBuilding(
+        id: Long,
+        building: Building,
+    ): Building? {
         return buildingRepository.save(building)
     }
 

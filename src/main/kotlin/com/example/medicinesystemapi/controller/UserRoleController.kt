@@ -8,11 +8,10 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/users")
 class UserRoleController(private val userRoleManagementService: UserRoleManagementService) {
-
     @PutMapping("/{userId}/role")
     fun changeUserRole(
         @PathVariable userId: Int,
-        @RequestParam newRoleId: Int
+        @RequestParam newRoleId: Int,
     ): ResponseEntity<Any> {
         val success = userRoleManagementService.changeUserRole(userId, newRoleId)
         return if (success) {

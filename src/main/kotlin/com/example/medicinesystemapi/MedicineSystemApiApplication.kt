@@ -9,5 +9,5 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class MedicineSystemApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<MedicineSystemApiApplication>(*args)
+    runApplication<MedicineSystemApiApplication>(*args)
 }

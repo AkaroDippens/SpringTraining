@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service
 @Service
 class DoctorServiceImpl(
     private val doctorRepository: DoctorRepository,
-    private val specializationRepository: SpecializationRepository
+    private val specializationRepository: SpecializationRepository,
 ) : DoctorService {
-
     override fun findAllDoctors(pageable: Pageable): Page<Doctor> {
         return doctorRepository.findAll(pageable)
     }
@@ -30,7 +29,7 @@ class DoctorServiceImpl(
     }
 
     override fun findDoctorByFullName(fullName: String?): Doctor? {
-        return doctorRepository.findAll().firstOrNull() { it.fullName == fullName }
+        return doctorRepository.findAll().firstOrNull { it.fullName == fullName }
     }
 
     override fun findDoctorByName(fullName: String?): List<Doctor> {
@@ -41,11 +40,17 @@ class DoctorServiceImpl(
         return doctorRepository.save(doctor)
     }
 
-    override fun updateDoctor(id: Long, doctor: Doctor): Doctor? {
+    override fun updateDoctor(
+        id: Long,
+        doctor: Doctor,
+    ): Doctor? {
         return doctorRepository.save(doctor)
     }
 
-    override fun updateDoctorSpecialization(doctorId: Long, specializationId: Long): Doctor? {
+    override fun updateDoctorSpecialization(
+        doctorId: Long,
+        specializationId: Long,
+    ): Doctor? {
         val doctor = doctorRepository.findById(doctorId).orElse(null) ?: return null
         val specialization = specializationRepository.findById(specializationId).orElse(null) ?: return null
 

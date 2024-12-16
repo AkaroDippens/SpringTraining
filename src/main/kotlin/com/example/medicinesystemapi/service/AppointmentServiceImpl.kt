@@ -1,7 +1,6 @@
 package com.example.medicinesystemapi.service
 
 import com.example.medicinesystemapi.model.Appointment
-import com.example.medicinesystemapi.model.Record
 import com.example.medicinesystemapi.repository.AppointmentRepository
 import com.example.medicinesystemapi.repository.RecordRepository
 import org.springframework.data.domain.Page
@@ -11,9 +10,8 @@ import org.springframework.stereotype.Service
 @Service
 class AppointmentServiceImpl(
     private val appointmentRepository: AppointmentRepository,
-    private val recordRepository: RecordRepository
+    private val recordRepository: RecordRepository,
 ) : AppointmentService {
-
     override fun findAllAppointments(pageable: Pageable): Page<Appointment> {
         return appointmentRepository.findAll(pageable)
     }
@@ -42,7 +40,10 @@ class AppointmentServiceImpl(
         return appointmentRepository.save(appointment)
     }
 
-    override fun updateAppointment(id: Long, appointment: Appointment): Appointment? {
+    override fun updateAppointment(
+        id: Long,
+        appointment: Appointment,
+    ): Appointment? {
         return appointmentRepository.findById(id).map { existingAppointment ->
             existingAppointment.apply {
                 reason = appointment.reason ?: reason

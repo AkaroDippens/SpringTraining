@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/medicalrecords")
 class MedicalRecordController(private val medicalRecordService: MedicalRecordService) {
-
     @GetMapping
     fun getAllMedicalRecords(): ResponseEntity<List<MedicalRecord?>> {
         val medicalRecords = medicalRecordService.findAllMedicalRecordsList()
@@ -22,7 +21,9 @@ class MedicalRecordController(private val medicalRecordService: MedicalRecordSer
     }
 
     @GetMapping("/{id}")
-    fun getMedicalRecordById(@PathVariable id: Long): ResponseEntity<MedicalRecord?> {
+    fun getMedicalRecordById(
+        @PathVariable id: Long,
+    ): ResponseEntity<MedicalRecord?> {
         val medicalRecord = medicalRecordService.findMedicalRecordById(id)
         return if (medicalRecord == null) {
             ResponseEntity.notFound().build()
@@ -32,7 +33,9 @@ class MedicalRecordController(private val medicalRecordService: MedicalRecordSer
     }
 
     @PostMapping
-    fun addMedicalRecord(@RequestBody medicalRecord: MedicalRecord): ResponseEntity<MedicalRecord?> {
+    fun addMedicalRecord(
+        @RequestBody medicalRecord: MedicalRecord,
+    ): ResponseEntity<MedicalRecord?> {
         if (medicalRecord.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -45,7 +48,10 @@ class MedicalRecordController(private val medicalRecordService: MedicalRecordSer
     }
 
     @PutMapping("/{id}")
-    fun updateMedicalRecord(@PathVariable id: Long, @RequestBody medicalRecord: MedicalRecord): ResponseEntity<MedicalRecord?> {
+    fun updateMedicalRecord(
+        @PathVariable id: Long,
+        @RequestBody medicalRecord: MedicalRecord,
+    ): ResponseEntity<MedicalRecord?> {
         if (medicalRecord.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -59,14 +65,18 @@ class MedicalRecordController(private val medicalRecordService: MedicalRecordSer
     }
 
     @DeleteMapping("/{id}")
-    fun deleteMedicalRecord(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteMedicalRecord(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         medicalRecordService.findMedicalRecordById(id) ?: return ResponseEntity.notFound().build()
         medicalRecordService.deleteMedicalRecord(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleMedicalRecords(@RequestBody medicalRecordIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleMedicalRecords(
+        @RequestBody medicalRecordIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (medicalRecordIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

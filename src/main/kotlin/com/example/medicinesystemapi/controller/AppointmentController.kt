@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/appointments")
 class AppointmentController(private val appointmentService: AppointmentService) {
-
     @GetMapping
     fun getAllAppointments(): ResponseEntity<List<Appointment?>> {
         val appointments = appointmentService.findAllAppointmentsList()
@@ -21,7 +20,9 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @GetMapping("/{id}")
-    fun getAppointmentById(@PathVariable id: Long): ResponseEntity<Appointment?> {
+    fun getAppointmentById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Appointment?> {
         val appointment = appointmentService.findAppointmentById(id)
         return if (appointment == null) {
             ResponseEntity.notFound().build()
@@ -31,7 +32,9 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @GetMapping("/record/{recordId}")
-    fun getAppointmentByRecordId(@PathVariable recordId: Int): ResponseEntity<Appointment> {
+    fun getAppointmentByRecordId(
+        @PathVariable recordId: Int,
+    ): ResponseEntity<Appointment> {
         val appointment = appointmentService.findAppointmentByRecordId(recordId)
         return if (appointment != null) {
             ResponseEntity.ok(appointment)
@@ -41,7 +44,9 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @GetMapping("/doctor/{doctorId}")
-    fun getAppointmentsByRecordId(@PathVariable doctorId: Int): ResponseEntity<List<Appointment>> {
+    fun getAppointmentsByRecordId(
+        @PathVariable doctorId: Int,
+    ): ResponseEntity<List<Appointment>> {
         val appointment = appointmentService.findAppointmentsByDoctorId(doctorId)
         return if (appointment != null) {
             ResponseEntity.ok(appointment)
@@ -51,7 +56,9 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @PostMapping
-    fun addAppointment(@RequestBody appointment: Appointment): ResponseEntity<Appointment?> {
+    fun addAppointment(
+        @RequestBody appointment: Appointment,
+    ): ResponseEntity<Appointment?> {
         if (appointment.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -64,7 +71,10 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @PutMapping("/{id}")
-    fun updateAppointment(@PathVariable id: Long, @RequestBody partialUpdate: Map<String, Any>): ResponseEntity<Appointment?> {
+    fun updateAppointment(
+        @PathVariable id: Long,
+        @RequestBody partialUpdate: Map<String, Any>,
+    ): ResponseEntity<Appointment?> {
         if (id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -84,14 +94,18 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @DeleteMapping("/{id}")
-    fun deleteAppointment(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteAppointment(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         appointmentService.findAppointmentById(id) ?: return ResponseEntity.notFound().build()
         appointmentService.deleteAppointment(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleAppointments(@RequestBody appointmentIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleAppointments(
+        @RequestBody appointmentIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (appointmentIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

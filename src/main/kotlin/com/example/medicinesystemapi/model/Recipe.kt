@@ -2,8 +2,6 @@ package com.example.medicinesystemapi.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
-import com.example.medicinesystemapi.model.Doctor
-import org.hibernate.annotations.ColumnDefault
 
 @Entity
 @Table(name = "recipes")

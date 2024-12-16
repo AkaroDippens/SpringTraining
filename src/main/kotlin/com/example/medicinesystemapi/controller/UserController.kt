@@ -1,12 +1,12 @@
 package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.User
+import com.example.medicinesystemapi.service.UserService
+import com.example.medicinesystemapi.validation.Validations
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import com.example.medicinesystemapi.service.UserService
-import io.swagger.v3.oas.annotations.tags.Tag
-import com.example.medicinesystemapi.validation.Validations
 
 @Tag(name = "User", description = "Operations related to users")
 @CrossOrigin("http://localhost:3000")
@@ -36,7 +36,9 @@ class UserController(private val userService: UserService) {
     }*/
 
     @GetMapping("/byname/{fullName}")
-    fun getUserByName(@PathVariable fullName: String): ResponseEntity<List<User>> {
+    fun getUserByName(
+        @PathVariable fullName: String,
+    ): ResponseEntity<List<User>> {
         val users = userService.findUserByName(fullName)
         return if (users.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -46,7 +48,9 @@ class UserController(private val userService: UserService) {
     }
 
     @GetMapping("/mhipolicy/{mhiPolicy}")
-    fun getUserByMhiPolicy(@PathVariable mhiPolicy: String): ResponseEntity<User?> {
+    fun getUserByMhiPolicy(
+        @PathVariable mhiPolicy: String,
+    ): ResponseEntity<User?> {
         val user = userService.findUserByMhiPolicy(mhiPolicy)
         return if (user?.mhiPolicy.isNullOrEmpty()) {
             ResponseEntity.noContent().build()
@@ -56,7 +60,9 @@ class UserController(private val userService: UserService) {
     }
 
     @PostMapping("/add")
-    fun addUser(@RequestBody user: User): ResponseEntity<Any?> {
+    fun addUser(
+        @RequestBody user: User,
+    ): ResponseEntity<Any?> {
         val errors = mutableMapOf<String, String>()
 
         if (user.id != null) {
@@ -76,7 +82,6 @@ class UserController(private val userService: UserService) {
 
         // Если есть ошибки, возвращаем их клиенту
 
-
         val userExistMHI = userService.findUserByMhiPolicy(user.mhiPolicy)
         if (userExistMHI != null) {
             errors["mhiPolicy"] = "Пользователь с таким полисом ОМС уже существует."
@@ -92,7 +97,10 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/{id}")
-    fun updateUser(@PathVariable id: Long, @RequestBody user: User): ResponseEntity<User?> {
+    fun updateUser(
+        @PathVariable id: Long,
+        @RequestBody user: User,
+    ): ResponseEntity<User?> {
         if (user.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -106,14 +114,18 @@ class UserController(private val userService: UserService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteUser(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         userService.findUserById(id) ?: return ResponseEntity.notFound().build()
         userService.deleteUser(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleUsers(@RequestBody userIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleUsers(
+        @RequestBody userIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (userIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

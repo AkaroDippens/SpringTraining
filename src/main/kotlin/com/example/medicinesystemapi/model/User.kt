@@ -3,11 +3,9 @@ package com.example.medicinesystemapi.model
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import com.example.medicinesystemapi.model.Role
 import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.OnDeleteAction
 import java.time.LocalDate
-
 
 @Entity
 @Table(name = "users")

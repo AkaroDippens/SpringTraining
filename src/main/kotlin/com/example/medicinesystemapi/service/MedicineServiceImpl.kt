@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class MedicineServiceImpl(
-    private val medicineRepository: MedicineRepository
+    private val medicineRepository: MedicineRepository,
 ) : MedicineService {
-
     override fun findAllMedicines(pageable: Pageable): Page<Medicine> {
         return medicineRepository.findAll(pageable)
     }
@@ -31,7 +30,10 @@ class MedicineServiceImpl(
         return medicineRepository.save(medicine)
     }
 
-    override fun updateMedicine(id: Long, medicine: Medicine): Medicine? {
+    override fun updateMedicine(
+        id: Long,
+        medicine: Medicine,
+    ): Medicine? {
         return medicineRepository.save(medicine)
     }
 

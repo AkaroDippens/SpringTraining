@@ -6,14 +6,12 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.springframework.stereotype.Service
 import java.io.*
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
 @Service
 class LoggingService(private val logEntryRepository: LogEntryRepository) {
-
     fun logRequest(logEntry: LogEntry) {
         logEntryRepository.save(logEntry)
     }
@@ -45,27 +43,30 @@ class LoggingService(private val logEntryRepository: LogEntryRepository) {
 
     fun importLogsFromCSV(inputStream: InputStream) {
         try {
-            val csvFormat = CSVFormat.DEFAULT
-                .withHeader("Timestamp", "Method", "URL", "Status", "UserAgent", "IPAddress")
-                .withFirstRecordAsHeader()
-                .withTrim()
+            val csvFormat =
+                CSVFormat.DEFAULT
+                    .withHeader("Timestamp", "Method", "URL", "Status", "UserAgent", "IPAddress")
+                    .withFirstRecordAsHeader()
+                    .withTrim()
 
             CSVParser(InputStreamReader(inputStream), csvFormat).use { parser ->
                 for (record in parser) {
                     try {
-                        val timestamp = LocalDateTime.parse(
-                            record.get("Timestamp"),
-                            DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                        )
+                        val timestamp =
+                            LocalDateTime.parse(
+                                record.get("Timestamp"),
+                                DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                            )
 
-                        val logEntry = LogEntry().apply {
-                            this.timestamp = timestamp
-                            method = record.get("Method")
-                            url = record.get("URL")
-                            status = record.get("Status").toInt()
-                            userAgent = record.get("UserAgent")
-                            ipAddress = record.get("IPAddress")
-                        }
+                        val logEntry =
+                            LogEntry().apply {
+                                this.timestamp = timestamp
+                                method = record.get("Method")
+                                url = record.get("URL")
+                                status = record.get("Status").toInt()
+                                userAgent = record.get("UserAgent")
+                                ipAddress = record.get("IPAddress")
+                            }
 
                         logEntryRepository.save(logEntry)
                     } catch (e: DateTimeParseException) {

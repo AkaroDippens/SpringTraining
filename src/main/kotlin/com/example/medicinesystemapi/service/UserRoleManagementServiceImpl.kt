@@ -13,11 +13,13 @@ class UserRoleManagementServiceImpl(
     private val doctorRepository: DoctorRepository,
     private val buildingRepository: BuildingRepository,
     private val specializationRepository: SpecializationRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
 ) : UserRoleManagementService {
-
     @Transactional
-    override fun changeUserRole(userId: Int, newRoleId: Int): Boolean {
+    override fun changeUserRole(
+        userId: Int,
+        newRoleId: Int,
+    ): Boolean {
         val user = userRepository.findById(userId.toLong()).orElse(null) ?: return false
         val oldRole = user.idRole?.roleName
 
@@ -32,13 +34,14 @@ class UserRoleManagementServiceImpl(
         when {
             oldRole != "DOCTOR" && newRole.roleName == "DOCTOR" -> {
                 // Создаем нового доктора
-                val doctor = Doctor().apply {
-                    this.id = null
-                    this.fullName = user.fullName
-                    this.idSpecialization = specializationRepository.findById(1).orElse(null)
-                    this.idBuilding = buildingRepository.findById(1).orElse(null)
-                    this.experience = LocalDate.now()
-                }
+                val doctor =
+                    Doctor().apply {
+                        this.id = null
+                        this.fullName = user.fullName
+                        this.idSpecialization = specializationRepository.findById(1).orElse(null)
+                        this.idBuilding = buildingRepository.findById(1).orElse(null)
+                        this.experience = LocalDate.now()
+                    }
                 doctorRepository.save(doctor)
             }
             oldRole == "DOCTOR" && newRole.roleName != "DOCTOR" -> {

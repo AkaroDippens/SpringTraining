@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class MedicalRecordServiceImpl(
-    private val medicalRecordRepository: MedicalRecordRepository
+    private val medicalRecordRepository: MedicalRecordRepository,
 ) : MedicalRecordService {
-
     override fun findAllMedicalRecords(pageable: Pageable): Page<MedicalRecord> {
         return medicalRecordRepository.findAll(pageable)
     }
@@ -26,6 +25,7 @@ class MedicalRecordServiceImpl(
     override fun findMedicalRecordByUserId(id: Long?): MedicalRecord? {
         return medicalRecordRepository.findByIdUser_Id(id)
     }
+
     override fun findMedicalRecordsByUserId(userId: Long?): List<MedicalRecord> {
         TODO("Not yet implemented")
     }
@@ -34,7 +34,10 @@ class MedicalRecordServiceImpl(
         return medicalRecordRepository.save(medicalRecord)
     }
 
-    override fun updateMedicalRecord(id: Long, medicalRecord: MedicalRecord): MedicalRecord? {
+    override fun updateMedicalRecord(
+        id: Long,
+        medicalRecord: MedicalRecord,
+    ): MedicalRecord? {
         return medicalRecordRepository.save(medicalRecord)
     }
 

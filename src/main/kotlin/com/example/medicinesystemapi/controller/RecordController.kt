@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/records")
 class RecordController(private val recordService: RecordService) {
-
     @GetMapping
     fun getAllRecords(): ResponseEntity<List<Record?>> {
         val records = recordService.findAllRecordsList()
@@ -23,7 +22,9 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @GetMapping("/{id}")
-    fun getRecordById(@PathVariable id: Long): ResponseEntity<Record?> {
+    fun getRecordById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Record?> {
         val record = recordService.findRecordById(id)
         return if (record == null) {
             ResponseEntity.notFound().build()
@@ -33,7 +34,9 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @GetMapping("/byuser/{id}")
-    fun getRecordByUserId(@PathVariable id: Long): ResponseEntity<List<Record>?> {
+    fun getRecordByUserId(
+        @PathVariable id: Long,
+    ): ResponseEntity<List<Record>?> {
         val record = recordService.findRecordsByUserId(id.toInt())
         return if (record == null) {
             ResponseEntity.notFound().build()
@@ -43,7 +46,9 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @GetMapping("/bydoctor/{doctorId}")
-    fun getRecordByDoctorId(@PathVariable doctorId: Long): ResponseEntity<List<Record>?> {
+    fun getRecordByDoctorId(
+        @PathVariable doctorId: Long,
+    ): ResponseEntity<List<Record>?> {
         val record = recordService.findRecordsByDoctorId(doctorId.toInt())
         return if (record == null) {
             ResponseEntity.notFound().build()
@@ -53,7 +58,9 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @PostMapping
-    fun addRecord(@RequestBody record: Record): ResponseEntity<Record?> {
+    fun addRecord(
+        @RequestBody record: Record,
+    ): ResponseEntity<Record?> {
         // Проверяем, занято ли время
         val existingRecord = recordService.findByDoctorAndTime(record.idDoctor?.id!!.toLong(), record.appointmentDate!!)
         if (existingRecord != null) {
@@ -69,7 +76,10 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @PutMapping("/{id}")
-    fun updateRecord(@PathVariable id: Long, @RequestBody record: Record): ResponseEntity<Record?> {
+    fun updateRecord(
+        @PathVariable id: Long,
+        @RequestBody record: Record,
+    ): ResponseEntity<Record?> {
         if (record.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -83,14 +93,18 @@ class RecordController(private val recordService: RecordService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteRecord(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteRecord(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         recordService.findRecordById(id) ?: return ResponseEntity.notFound().build()
         recordService.deleteRecord(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleRecords(@RequestBody recordIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleRecords(
+        @RequestBody recordIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (recordIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

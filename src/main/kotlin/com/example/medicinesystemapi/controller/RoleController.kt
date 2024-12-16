@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/roles")
 class RoleController(private val roleService: RoleService) {
-
     @GetMapping
     fun getAllRoles(): ResponseEntity<List<Role?>> {
         val roles = roleService.findAllRolesList()
@@ -23,7 +22,9 @@ class RoleController(private val roleService: RoleService) {
     }
 
     @GetMapping("/{id}")
-    fun getRoleById(@PathVariable id: Long): ResponseEntity<Role?> {
+    fun getRoleById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Role?> {
         val role = roleService.findRoleById(id)
         return if (role == null) {
             ResponseEntity.notFound().build()
@@ -33,7 +34,9 @@ class RoleController(private val roleService: RoleService) {
     }
 
     @GetMapping("/byname/{roleName}")
-    fun getRoleByName(@PathVariable roleName: String): ResponseEntity<Role?> {
+    fun getRoleByName(
+        @PathVariable roleName: String,
+    ): ResponseEntity<Role?> {
         val roles = roleService.findRoleByName(roleName)
         return if (roles == null) {
             ResponseEntity.noContent().build()
@@ -43,7 +46,9 @@ class RoleController(private val roleService: RoleService) {
     }
 
     @PostMapping
-    fun addRole(@RequestBody role: Role): ResponseEntity<Role?> {
+    fun addRole(
+        @RequestBody role: Role,
+    ): ResponseEntity<Role?> {
         if (role.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -59,7 +64,10 @@ class RoleController(private val roleService: RoleService) {
     }
 
     @PutMapping("/{id}")
-    fun updateRole(@PathVariable id: Long, @RequestBody role: Role): ResponseEntity<Role?> {
+    fun updateRole(
+        @PathVariable id: Long,
+        @RequestBody role: Role,
+    ): ResponseEntity<Role?> {
         if (role.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -73,14 +81,18 @@ class RoleController(private val roleService: RoleService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteRole(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteRole(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         roleService.findRoleById(id) ?: return ResponseEntity.notFound().build()
         roleService.deleteRole(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleRoles(@RequestBody roleIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleRoles(
+        @RequestBody roleIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (roleIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

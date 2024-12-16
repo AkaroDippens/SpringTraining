@@ -1,14 +1,19 @@
 package com.example.medicinesystemapi.controller
+
 import com.example.medicinesystemapi.service.LoggingService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 
 @RestController
 @RequestMapping("/api/logs")
 class LogController(private val loggingService: LoggingService) {
-
     @GetMapping
     fun getAllLogs() = loggingService.getAllLogs()
 
@@ -28,7 +33,9 @@ class LogController(private val loggingService: LoggingService) {
     }
 
     @PostMapping("/import")
-    fun importLogs(@RequestParam("file") file: MultipartFile): ResponseEntity<String> {
+    fun importLogs(
+        @RequestParam("file") file: MultipartFile,
+    ): ResponseEntity<String> {
         try {
             loggingService.importLogsFromCSV(file.inputStream)
             return ResponseEntity.ok("Logs imported successfully")

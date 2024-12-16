@@ -26,7 +26,9 @@ class ViewUserController(
     }
 
     @GetMapping("/{id}")
-    fun getViewUserById(@PathVariable id: Int): ResponseEntity<ViewUser?> {
+    fun getViewUserById(
+        @PathVariable id: Int,
+    ): ResponseEntity<ViewUser?> {
         val user = viewUserService.findViewUserById(id)
         return if (user == null) {
             ResponseEntity.notFound().build()

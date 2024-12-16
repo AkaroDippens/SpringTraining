@@ -4,12 +4,19 @@ import com.example.medicinesystemapi.model.Doctor
 import com.example.medicinesystemapi.service.DoctorService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/doctors")
 class DoctorController(private val doctorService: DoctorService) {
-
     @GetMapping
     fun getAllDoctors(): ResponseEntity<List<Doctor?>> {
         val doctors = doctorService.findAllDoctorsList()
@@ -21,7 +28,9 @@ class DoctorController(private val doctorService: DoctorService) {
     }
 
     @GetMapping("/{id}")
-    fun getDoctorById(@PathVariable id: Long): ResponseEntity<Doctor?> {
+    fun getDoctorById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Doctor?> {
         val doctor = doctorService.findDoctorById(id)
         return if (doctor == null) {
             ResponseEntity.notFound().build()
@@ -30,8 +39,10 @@ class DoctorController(private val doctorService: DoctorService) {
         }
     }
 
-    @GetMapping("byspecialization/{id}")
-    fun getDoctorBySpecializationId(@PathVariable id: Long): ResponseEntity<List<Doctor>?> {
+    @GetMapping("/byspecialization/{id}")
+    fun getDoctorBySpecializationId(
+        @PathVariable id: Long,
+    ): ResponseEntity<List<Doctor>?> {
         val doctor = doctorService.findDoctorBySpecializationId(id)
         return if (doctor == null) {
             ResponseEntity.notFound().build()
@@ -40,8 +51,10 @@ class DoctorController(private val doctorService: DoctorService) {
         }
     }
 
-    @GetMapping("byfullname/{fullName}")
-    fun getDoctorByFullName(@PathVariable fullName: String): ResponseEntity<Doctor?> {
+    @GetMapping("/byfullname/{fullName}")
+    fun getDoctorByFullName(
+        @PathVariable fullName: String,
+    ): ResponseEntity<Doctor?> {
         val doctor = doctorService.findDoctorByFullName(fullName)
         return if (doctor == null) {
             ResponseEntity.notFound().build()
@@ -51,7 +64,9 @@ class DoctorController(private val doctorService: DoctorService) {
     }
 
     @GetMapping("/byname/{fullName}")
-    fun getDoctorByName(@PathVariable fullName: String): ResponseEntity<List<Doctor>> {
+    fun getDoctorByName(
+        @PathVariable fullName: String,
+    ): ResponseEntity<List<Doctor>> {
         val doctors = doctorService.findDoctorByName(fullName)
         return if (doctors.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -61,7 +76,9 @@ class DoctorController(private val doctorService: DoctorService) {
     }
 
     @PostMapping
-    fun addDoctor(@RequestBody doctor: Doctor): ResponseEntity<Doctor?> {
+    fun addDoctor(
+        @RequestBody doctor: Doctor,
+    ): ResponseEntity<Doctor?> {
         if (doctor.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -77,7 +94,10 @@ class DoctorController(private val doctorService: DoctorService) {
     }
 
     @PutMapping("/{id}")
-    fun updateDoctor(@PathVariable id: Long, @RequestBody doctor: Doctor): ResponseEntity<Doctor?> {
+    fun updateDoctor(
+        @PathVariable id: Long,
+        @RequestBody doctor: Doctor,
+    ): ResponseEntity<Doctor?> {
         if (doctor.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -93,7 +113,7 @@ class DoctorController(private val doctorService: DoctorService) {
     @PutMapping("/{id}/specialization")
     fun updateDoctorSpecialization(
         @PathVariable id: Long,
-        @RequestParam specializationId: Long
+        @RequestParam specializationId: Long,
     ): ResponseEntity<Doctor?> {
         val updatedDoctor = doctorService.updateDoctorSpecialization(id, specializationId)
         return if (updatedDoctor == null) {
@@ -104,14 +124,18 @@ class DoctorController(private val doctorService: DoctorService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteDoctor(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteDoctor(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         doctorService.findDoctorById(id) ?: return ResponseEntity.notFound().build()
         doctorService.deleteDoctor(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleDoctors(@RequestBody doctorIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleDoctors(
+        @RequestBody doctorIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (doctorIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class RecipeServiceImpl(
-    private val recipeRepository: RecipeRepository
+    private val recipeRepository: RecipeRepository,
 ) : RecipeService {
-
     override fun findAllRecipes(pageable: Pageable): Page<Recipe> {
         return recipeRepository.findAll(pageable)
     }
@@ -27,7 +26,10 @@ class RecipeServiceImpl(
         return recipeRepository.save(recipe)
     }
 
-    override fun updateRecipe(id: Long, recipe: Recipe): Recipe? {
+    override fun updateRecipe(
+        id: Long,
+        recipe: Recipe,
+    ): Recipe? {
         return recipeRepository.save(recipe)
     }
 

@@ -1,17 +1,11 @@
-package com.example.medicinesystemapi.config;
+package com.example.medicinesystemapi.config
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-
 
 @Configuration
 class WebConfig : WebMvcConfigurer {
-
-// @Autowired
+    // @Autowired
 // private lateinit var authInterceptor: AuthInterceptor
 //
 // override fun addInterceptors(registry: InterceptorRegistry) {

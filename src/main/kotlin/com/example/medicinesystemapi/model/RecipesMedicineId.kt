@@ -16,7 +16,9 @@ class RecipesMedicineId : Serializable {
     @NotNull
     @Column(name = "id_medicine", nullable = false)
     var idMedicine: Int? = null
+
     override fun hashCode(): Int = Objects.hash(idRecipe, idMedicine)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
@@ -24,7 +26,7 @@ class RecipesMedicineId : Serializable {
         other as RecipesMedicineId
 
         return idRecipe == other.idRecipe &&
-                idMedicine == other.idMedicine
+            idMedicine == other.idMedicine
     }
 
     companion object {

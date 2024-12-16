@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/recipes")
 class RecipeController(private val recipeService: RecipeService) {
-
     @GetMapping
     fun getAllRecipes(): ResponseEntity<List<Recipe?>> {
         val recipes = recipeService.findAllRecipesList()
@@ -21,7 +20,9 @@ class RecipeController(private val recipeService: RecipeService) {
     }
 
     @GetMapping("/{id}")
-    fun getRecipeById(@PathVariable id: Long): ResponseEntity<Recipe?> {
+    fun getRecipeById(
+        @PathVariable id: Long,
+    ): ResponseEntity<Recipe?> {
         val recipe = recipeService.findRecipeById(id)
         return if (recipe == null) {
             ResponseEntity.notFound().build()
@@ -31,7 +32,9 @@ class RecipeController(private val recipeService: RecipeService) {
     }
 
     @PostMapping
-    fun addRecipe(@RequestBody recipe: Recipe): ResponseEntity<Recipe?> {
+    fun addRecipe(
+        @RequestBody recipe: Recipe,
+    ): ResponseEntity<Recipe?> {
         if (recipe.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -44,7 +47,10 @@ class RecipeController(private val recipeService: RecipeService) {
     }
 
     @PutMapping("/{id}")
-    fun updateRecipe(@PathVariable id: Long, @RequestBody recipe: Recipe): ResponseEntity<Recipe?> {
+    fun updateRecipe(
+        @PathVariable id: Long,
+        @RequestBody recipe: Recipe,
+    ): ResponseEntity<Recipe?> {
         if (recipe.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -58,14 +64,18 @@ class RecipeController(private val recipeService: RecipeService) {
     }
 
     @DeleteMapping("/{id}")
-    fun deleteRecipe(@PathVariable id: Long): ResponseEntity<Void> {
+    fun deleteRecipe(
+        @PathVariable id: Long,
+    ): ResponseEntity<Void> {
         recipeService.findRecipeById(id) ?: return ResponseEntity.notFound().build()
         recipeService.deleteRecipe(id)
         return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/multiple")
-    fun deleteMultipleRecipes(@RequestBody recipeIds: List<Long>): ResponseEntity<Void> {
+    fun deleteMultipleRecipes(
+        @RequestBody recipeIds: List<Long>,
+    ): ResponseEntity<Void> {
         if (recipeIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

@@ -2,19 +2,17 @@ package com.example.medicinesystemapi.service
 
 import com.example.medicinesystemapi.config.PasswordEncoderUtil
 import com.example.medicinesystemapi.model.User
+import com.example.medicinesystemapi.repository.RoleRepository
 import com.example.medicinesystemapi.repository.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import com.example.medicinesystemapi.repository.RoleRepository
-import org.springframework.security.crypto.password.PasswordEncoder
 
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
 ) : UserService {
-
     override fun findAllUsers(pageable: Pageable): Page<User> {
         return userRepository.findAll(pageable)
     }
@@ -28,22 +26,27 @@ class UserServiceImpl(
     }
 
     override fun findUserByName(fullName: String?): List<User> {
-        return userRepository.findAll().filter{ it.fullName == fullName }
+        return userRepository.findAll().filter { it.fullName == fullName }
     }
 
     override fun addUser(user: User): User? {
         val userExist = userRepository.findAll().firstOrNull { it.mhiPolicy == user.mhiPolicy }
-        if (user.mhiPolicy != userExist?.mhiPolicy){
-            val defaultRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
-            user.idRole = defaultRole
+        if (user.mhiPolicy != userExist?.mhiPolicy)
+            {
+                val defaultRole = roleRepository.findAll().firstOrNull { it.roleName == "USER" }
+                user.idRole = defaultRole
 
-            user.password = PasswordEncoderUtil.encode(user.password)
-            return userRepository.save(user)
+                user.password = PasswordEncoderUtil.encode(user.password)
+                return userRepository.save(user)
+            } else {
+            return null
         }
-        else return null
     }
 
-    override fun updateUser(id: Long, user: User): User? {
+    override fun updateUser(
+        id: Long,
+        user: User,
+    ): User? {
         return userRepository.save(user)
     }
 

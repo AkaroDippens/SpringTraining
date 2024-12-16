@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerConfig {
-
     @Bean
     fun customOpenAPI(): OpenAPI {
         return OpenAPI()
@@ -15,7 +14,7 @@ class SwaggerConfig {
                 Info()
                     .title("Medicine System API")
                     .version("1.0")
-                    .description("API documentation for the Medicine System")
+                    .description("API documentation for the Medicine System"),
             )
     }
 }

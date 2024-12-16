@@ -1,6 +1,5 @@
 package com.example.medicinesystemapi.service
 
-
 import com.example.medicinesystemapi.model.ViewUser
 import com.example.medicinesystemapi.repository.ViewUserRepository
 import com.opencsv.CSVWriter
@@ -10,7 +9,7 @@ import java.io.StringWriter
 @Service
 class ViewUserServiceImpl(
     private val viewUserRepository: ViewUserRepository,
-): ViewUserService {
+) : ViewUserService {
     override fun findAllViewUsers(): List<ViewUser> {
         return viewUserRepository.findAll()
     }
@@ -30,14 +29,15 @@ class ViewUserServiceImpl(
 
         // Записываем данные
         users.forEach { user ->
-            val row = arrayOf(
-                user.id.toString(),
-                user.fullName,
-                user.contactNumber,
-                user.mhiPolicy,
-                user.birthDate?.toString(),
-                user.roleName
-            )
+            val row =
+                arrayOf(
+                    user.id.toString(),
+                    user.fullName,
+                    user.contactNumber,
+                    user.mhiPolicy,
+                    user.birthDate?.toString(),
+                    user.roleName,
+                )
             csvWriter.writeNext(row)
         }
 
