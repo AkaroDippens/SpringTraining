@@ -15,6 +15,11 @@
     <div class="container">
         <h1 class="title">СПИСОК ВРАЧЕЙ</h1>
 
+        <div class="filters">
+            <input type="text" id="search-input" placeholder="Поиск по ФИО или специализации...">
+            <button class="btn" id="search-btn">Поиск</button>
+        </div>
+
         <!-- Таблица с врачами -->
         <table class="doctor-table">
             <thead>
@@ -42,6 +47,7 @@
             <p id="doctor-detail-building"><strong>Строение:</strong> </p>
             <p id="doctor-detail-experience"><strong>Стаж:</strong> </p>
             <button id="change-specialization-btn" class="btn">Изменить специализацию</button>
+            <button id="change-building-btn" class="btn">Изменить корпус</button>
         </div>
     </div>
 
@@ -54,6 +60,21 @@
                 <input type="hidden" id="doctor-id" name="id">
                 <label for="specialization">Специализация:</label>
                 <select id="specialization" name="specialization" required>
+                    <!-- Опции будут добавляться динамически через JavaScript -->
+                </select>
+                <button type="submit" class="btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="change-building-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="close-change-building-modal">&times;</span>
+            <h2>Изменить корпус</h2>
+            <form id="change-building-form">
+                <input type="hidden" id="building-doctor-id" name="id">
+                <label for="building">Корпус:</label>
+                <select id="building" name="building" required>
                     <!-- Опции будут добавляться динамически через JavaScript -->
                 </select>
                 <button type="submit" class="btn">Сохранить</button>

@@ -2,6 +2,9 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Appointment
 import com.example.medicinesystemapi.service.AppointmentService
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/appointments")
 class AppointmentController(private val appointmentService: AppointmentService) {
+
     @GetMapping
     fun getAllAppointments(): ResponseEntity<List<Appointment?>> {
         val appointments = appointmentService.findAllAppointmentsList()
@@ -44,12 +48,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
     }
 
     @GetMapping("/doctor/{doctorId}")
-    fun getAppointmentsByRecordId(
+    fun getAppointmentsByDoctorId(
         @PathVariable doctorId: Int,
     ): ResponseEntity<List<Appointment>> {
-        val appointment = appointmentService.findAppointmentsByDoctorId(doctorId)
-        return if (appointment != null) {
-            ResponseEntity.ok(appointment)
+        val appointments = appointmentService.findAppointmentsByDoctorId(doctorId)
+        return if (appointments != null) {
+            ResponseEntity.ok(appointments)
         } else {
             ResponseEntity.notFound().build()
         }

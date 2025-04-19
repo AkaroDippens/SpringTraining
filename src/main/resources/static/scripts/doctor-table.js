@@ -8,7 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeSpecializationForm = document.getElementById('change-specialization-form');
     const doctorIdInput = document.getElementById('doctor-id');
     const specializationSelect = document.getElementById('specialization');
+    const changeBuildingModal = document.getElementById('change-building-modal');
+    const closeChangeBuildingModal = document.getElementById('close-change-building-modal');
+    const changeBuildingBtn = document.getElementById('change-building-btn');
+    const changeBuildingForm = document.getElementById('change-building-form');
+    const buildingSelect = document.getElementById('building');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
 
+    let doctors = [];
     let currentDoctorId = null;
 
     // Функция для вывода данных в таблицу
@@ -25,6 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             tableBody.appendChild(row);
         });
+    };
+
+    const searchDoctors = (query) => {
+        if (!query.trim()) return doctors;
+
+        return doctors.filter(doctor =>
+            doctor.fullName.toLowerCase().includes(query.toLowerCase()) ||
+            doctor.idSpecialization.specializationName.toLowerCase().includes(query.toLowerCase())
+        );
+    };
+
+    // Обработчик поиска
+    searchBtn.onclick = () => {
+        const filteredDoctors = searchDoctors(searchInput.value);
+        renderDoctorsTable(filteredDoctors);
     };
 
     // Функция для отображения детальной информации
@@ -83,6 +106,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    changeBuildingBtn.onclick = () => {
+        document.getElementById('building-doctor-id').value = currentDoctorId;
+        fetchBuildings();
+        changeBuildingModal.style.display = 'block';
+    };
+
+    changeBuildingForm.onsubmit = (event) => {
+        event.preventDefault();
+        const buildingId = buildingSelect.value;
+
+        fetch(`/api/doctors/${currentDoctorId}/building?buildingId=${buildingId}`, {
+            method: 'PUT'
+        })
+        .then(response => {
+            if (response.ok) {
+                fetchDoctors();
+                changeBuildingModal.style.display = 'none';
+                detailsModal.style.display = 'none';
+            } else {
+                alert('Ошибка при изменении корпуса');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при изменении корпуса:', error);
+        });
+    };
+
+    closeChangeBuildingModal.onclick = () => {
+        changeBuildingModal.style.display = 'none';
+    };
+
     // Получаем данные о специализациях для выпадающего списка
     const fetchSpecializations = () => {
         fetch('/api/specializations')
@@ -101,11 +155,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
+    const fetchBuildings = () => {
+    fetch('/api/buildings')
+        .then(response => response.json())
+        .then(buildings => {
+            buildingSelect.innerHTML = '';
+            buildings.forEach(building => {
+                const option = document.createElement('option');
+                option.value = building.id;
+                option.textContent = building.buildingName;
+                buildingSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка при получении списка корпусов:', error);
+        });
+    };
+
+
     // Получаем данные о врачах с сервера
     const fetchDoctors = () => {
         fetch('/api/doctors')
             .then(response => response.json())
-            .then(doctors => {
+            .then(fetchedDoctors => {
+                doctors = fetchedDoctors;
                 renderDoctorsTable(doctors);
             })
             .catch(error => {

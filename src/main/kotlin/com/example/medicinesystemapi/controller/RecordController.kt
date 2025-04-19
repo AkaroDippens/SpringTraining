@@ -1,7 +1,9 @@
 package com.example.medicinesystemapi.controller
 
+import com.example.medicinesystemapi.model.Appointment
 import com.example.medicinesystemapi.model.Record
 import com.example.medicinesystemapi.service.RecordService
+import com.example.medicinesystemapi.service.RecordToAppointmentScheduler
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,7 +12,10 @@ import org.springframework.web.bind.annotation.*
 @Tag(name = "Record", description = "Operations related to records")
 @RestController
 @RequestMapping("/api/records")
-class RecordController(private val recordService: RecordService) {
+class RecordController(
+    private val recordService: RecordService,
+    private val recordToAppointmentScheduler: RecordToAppointmentScheduler
+) {
     @GetMapping
     fun getAllRecords(): ResponseEntity<List<Record?>> {
         val records = recordService.findAllRecordsList()
@@ -110,5 +115,18 @@ class RecordController(private val recordService: RecordService) {
         }
         recordService.deleteMultipleRecords(recordIds)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{id}/start-appointment")
+    fun startAppointment(@PathVariable id: Long): ResponseEntity<Appointment?> {
+        if (recordService.findRecordById(id) == null) {
+            return ResponseEntity.notFound().build()
+        }
+        val appointment = recordToAppointmentScheduler.createAppointmentFromRecord(id)
+        return if (appointment == null) {
+            ResponseEntity.status(HttpStatus.CONFLICT).body(null) // Приём уже существует
+        } else {
+            ResponseEntity.status(HttpStatus.CREATED).body(appointment)
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.example.medicinesystemapi.service
 
 import com.example.medicinesystemapi.model.Doctor
+import com.example.medicinesystemapi.repository.BuildingRepository
 import com.example.medicinesystemapi.repository.DoctorRepository
 import com.example.medicinesystemapi.repository.SpecializationRepository
 import org.springframework.data.domain.Page
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service
 class DoctorServiceImpl(
     private val doctorRepository: DoctorRepository,
     private val specializationRepository: SpecializationRepository,
+    private val buildingRepository: BuildingRepository,
 ) : DoctorService {
     override fun findAllDoctors(pageable: Pageable): Page<Doctor> {
         return doctorRepository.findAll(pageable)
@@ -55,6 +57,14 @@ class DoctorServiceImpl(
         val specialization = specializationRepository.findById(specializationId).orElse(null) ?: return null
 
         doctor.idSpecialization = specialization
+        return doctorRepository.save(doctor)
+    }
+
+    override fun updateDoctorBuilding(doctorId: Long, buildingId: Long): Doctor? {
+        val doctor = doctorRepository.findById(doctorId).orElse(null) ?: return null
+        val building = buildingRepository.findById(buildingId).orElse(null) ?: return null
+
+        doctor.idBuilding = building
         return doctorRepository.save(doctor)
     }
 

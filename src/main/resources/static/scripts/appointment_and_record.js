@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedSpecializationId = null;
     let selectedDoctorId = null;
+    let selectedDoctor = null;
     let selectedBuildingId = null;
     let selectedDate = null;
     let selectedTime = null;
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Стаж работы:</strong> ${doctor.experience}</p>
                     `;
                     button.onclick = () => {
+                        selectedDoctor = doctor;
                         selectedDoctorId = doctor.id;
                         selectedBuildingId = doctor.idBuilding.id;
                         loadDates();
@@ -135,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                idDoctor: { id: selectedDoctorId },
+                idDoctor: selectedDoctor,
                 idBuilding: { id: selectedBuildingId },
                 idUser: { id: userId },
                 appointmentDate: appointmentDateTime

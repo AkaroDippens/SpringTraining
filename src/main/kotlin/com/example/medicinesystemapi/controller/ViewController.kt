@@ -30,6 +30,11 @@ class ViewController
             return "register"
         }
 
+        @GetMapping("/")
+        fun homeProfilePage(): String {
+            return "profile"
+        }
+
         @GetMapping("/profile")
         fun profilePage(): String {
             return "profile"
@@ -73,6 +78,11 @@ class ViewController
         @GetMapping("/db-admin/logs")
         fun logsPage(): String {
             return "logs"
+        }
+
+        @GetMapping("/db-admin/statistics")
+        fun statisticsPage(): String {
+            return "statistics"
         }
 
         @GetMapping("/logout")

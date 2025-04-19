@@ -9,6 +9,40 @@ h1, h2 {
     padding: 20px;
 }
 
+.accordion {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.accordion-item {
+    margin-bottom: 10px;
+}
+
+.accordion-header {
+    width: 100%;
+    padding: 15px;
+    background-color: #f1f1f1;
+    border: none;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s;
+}
+
+.accordion-header:hover {
+    background-color: #ddd;
+}
+
+.accordion-content {
+    display: none; /* Скрыто по умолчанию */
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
 .history-item {
     border: 1px solid #ccc;
     padding: 15px;

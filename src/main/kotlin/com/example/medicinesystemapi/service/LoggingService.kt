@@ -29,10 +29,8 @@ class LoggingService(private val logEntryRepository: LogEntryRepository) {
         val outputStream = ByteArrayOutputStream()
         val writer = PrintWriter(outputStream)
 
-        // Write CSV header
         writer.println("Timestamp,Method,URL,Status,UserAgent,IPAddress")
 
-        // Write each log entry
         logs.forEach { log ->
             writer.println("${log.timestamp},${log.method},${log.url},${log.status},${log.userAgent},${log.ipAddress}")
         }

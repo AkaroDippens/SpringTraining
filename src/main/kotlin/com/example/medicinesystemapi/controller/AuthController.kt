@@ -38,7 +38,7 @@ class AuthController
             val user: User? = userService.findUserByMhiPolicy(mhiPolicy)
             return if (user != null && PasswordEncoderUtil.matches(password, user.password)) {
                 // Генерация токена
-                val token = generateToken(mhiPolicy, user.id?.toLong(), user.fullName)
+                val token = generateToken(mhiPolicy, user.id?.toLong(), user.fullName, user.idRole?.roleName)
                 ResponseEntity.ok(AuthResponse(token, user))
             } else {
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials")
@@ -50,6 +50,7 @@ class AuthController
             mhiPolicy: String,
             userId: Long?,
             fullName: String?,
+            role: String?,
         ): String {
             val now = Date()
             val expiration = Date(now.time + 86400000) // токен действителен 24 часа
@@ -58,6 +59,7 @@ class AuthController
                 .setSubject(mhiPolicy)
                 .claim("userId", userId)
                 .claim("fullName", fullName)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(SECRET_KEY)

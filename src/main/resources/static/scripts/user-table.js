@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.getElementById('close-modal');
     const paginationContainer = document.getElementById('pagination');
     const itemsPerPage = 10;
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+
     let currentPage = 1;
     let users = []; // Данные пользователей
     let currentSortColumn = null;
@@ -87,6 +90,22 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error changing user role:', error);
             alert('Failed to change user role. Please try again.');
         });
+    };
+
+    const searchUsers = (query) => {
+        if (!query.trim()) return users;
+
+        return users.filter(user =>
+            user.fullName.toLowerCase().includes(query.toLowerCase()) ||
+            (user.contactNumber && user.contactNumber.includes(query)) ||
+            (user.mhiPolicy && user.mhiPolicy.includes(query))
+        );
+    };
+
+    // Обработчик поиска
+    searchBtn.onclick = () => {
+        const filteredUsers = searchUsers(searchInput.value);
+        renderUsersTable(filteredUsers);
     };
 
     // Функция для сортировки

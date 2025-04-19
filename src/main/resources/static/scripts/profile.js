@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Получение профиля пользователя и загрузка записей
     fetch('/api/profile', {
         method: 'GET',
         headers: {
@@ -38,79 +37,110 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 });
 
-// Функция для загрузки записей пользователя
-function loadAppointments(userId) {
-    fetch(`/api/records/byuser/${userId}`, {
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch user records');
+// Функция для проверки, завершён ли приём
+async function isAppointmentCompleted(recordId) {
+    try {
+        const response = await fetch(`/api/appointments/record/${recordId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
             }
-            return response.json();
-        })
-        .then(records => {
-            const now = new Date();
-            const nowUTC = new Date(Date.UTC(
-                now.getUTCFullYear(),
-                now.getUTCMonth(),
-                now.getUTCDate(),
-                now.getUTCHours(),
-                now.getUTCMinutes(),
-                now.getUTCSeconds()
-            ));
-            console.log("Current time in UTC: ", nowUTC);
-
-            const adjustedNow = new Date(nowUTC.getTime() + 3 * 60 * 60 * 1000);
-            console.log("Adjusted current time (GMT+3): ", adjustedNow);
-
-            const upcomingRecords = records.filter(record => {
-                const appointmentDate = new Date(record.appointmentDate);
-                return appointmentDate > adjustedNow;
-            });
-
-            const pastRecords = records.filter(record => {
-                const appointmentDate = new Date(record.appointmentDate);
-                return appointmentDate <= adjustedNow;
-            });
-
-            const list = document.getElementById('appointments-list');
-            list.innerHTML = '';
-
-            if (upcomingRecords.length > 0) {
-                const upcomingSection = document.createElement('div');
-                upcomingSection.innerHTML = `
-                    <h3 style="text-align: center;">Предстоящие</h3>
-                `;
-                upcomingRecords.forEach(record => {
-                    const item = createAppointmentItem(record, true);
-                    upcomingSection.appendChild(item);
-                });
-                list.appendChild(upcomingSection);
-            }
-
-            if (pastRecords.length > 0) {
-                const pastSection = document.createElement('div');
-                pastSection.innerHTML = `
-                    <h3 style="text-align: center;">Прошедшие</h3>
-                `;
-                pastRecords.forEach(record => {
-                    const item = createAppointmentItem(record, false);
-                    pastSection.appendChild(item);
-                });
-                list.appendChild(pastSection);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading records:', error);
-            alert('Failed to load user records.');
         });
+        if (!response.ok) {
+            return false; // Если приём не найден, считаем его незавершённым
+        }
+        const appointment = await response.json();
+        // Приём считается завершённым, если есть диагноз и рекомендации
+        return appointment.diagnosis && appointment.recommendations;
+    } catch (error) {
+        console.error('Error checking appointment status:', error);
+        return false;
+    }
+}
+
+// Функция для загрузки записей пользователя
+async function loadAppointments(userId) {
+    try {
+        const response = await fetch(`/api/records/byuser/${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch user records');
+        }
+        const records = await response.json();
+
+        const now = new Date();
+        const nowUTC = new Date(Date.UTC(
+            now.getUTCFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            now.getUTCHours(),
+            now.getUTCMinutes(),
+            now.getUTCSeconds()
+        ));
+        const adjustedNow = new Date(nowUTC.getTime() + 3 * 60 * 60 * 1000); // GMT+3
+
+        // Разделяем записи на предстоящие и прошедшие
+        const upcomingRecords = [];
+        const pastRecords = [];
+
+        for (const record of records) {
+            const appointmentDate = new Date(record.appointmentDate);
+            const isCompleted = await isAppointmentCompleted(record.id);
+
+            // Если приём завершён (есть диагноз и рекомендации), добавляем в прошедшие
+            if (isCompleted) {
+                pastRecords.push(record);
+            } else {
+                // Если приём не завершён, проверяем дату
+                if (appointmentDate > adjustedNow) {
+                    upcomingRecords.push(record);
+                } else {
+                    pastRecords.push(record);
+                }
+            }
+        }
+
+        // Сортируем записи по убыванию даты (самые свежие сверху)
+        upcomingRecords.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+        pastRecords.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+
+        const list = document.getElementById('appointments-list');
+        list.innerHTML = '';
+
+        if (upcomingRecords.length > 0) {
+            const upcomingSection = document.createElement('div');
+            upcomingSection.innerHTML = `
+                <h3 style="text-align: center;">Предстоящие</h3>
+            `;
+            upcomingRecords.forEach(record => {
+                const item = createAppointmentItem(record, true);
+                upcomingSection.appendChild(item);
+            });
+            list.appendChild(upcomingSection);
+        }
+
+        if (pastRecords.length > 0) {
+            const pastSection = document.createElement('div');
+            pastSection.innerHTML = `
+                <h3 style="text-align: center;">Прошедшие</h3>
+            `;
+            pastRecords.forEach(record => {
+                const item = createAppointmentItem(record, false);
+                pastSection.appendChild(item);
+            });
+            list.appendChild(pastSection);
+        }
+    } catch (error) {
+        console.error('Error loading records:', error);
+        alert('Failed to load user records.');
+    }
 }
 
 function createAppointmentItem(record, isUpcoming) {
     const item = document.createElement('div');
+    item.className = 'history-item';
     item.className = 'history-item';
     item.innerHTML = `
         <div class="history-date">Дата: ${record.appointmentDate.split('T')[0]} ${record.appointmentDate.split('T')[1].slice(0, 5)}</div>
@@ -145,7 +175,7 @@ function deleteRecord(recordId) {
     })
         .then(() => {
             alert('Запись отменена');
-            location.reload(); // Обновляем страницу для повторной загрузки записей
+            location.reload();
         })
         .catch(error => {
             console.error('Error deleting record:', error);
@@ -162,6 +192,7 @@ function viewAppointmentReport(recordId) {
         .then(appointment => {
             document.getElementById("diagnosis").textContent = appointment.diagnosis || 'Нет данных';
             document.getElementById("recommendations").textContent = appointment.recommendations || 'Нет рекомендаций';
+            document.getElementById("reasons").textContent = appointment.reason || 'Причины отсутствуют';
             document.getElementById("appointment-modal").style.display = "block";
         })
         .catch(error => {
@@ -177,4 +208,3 @@ document.getElementById("close-appointment-modal").onclick = function () {
 document.getElementById("close-modal").onclick = function () {
     document.getElementById("appointment-modal").style.display = "none";
 };
-

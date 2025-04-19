@@ -53,6 +53,7 @@ function updateMenu(userRole) {
         menuItems = `
             <a href="/doctor/appointments" class="nav-link">Приемы</a>
             <a href="/medicines" class="nav-link">Лекарства</a>
+            <a href="/profile" class="nav-link">Профиль</a>
             <a href="/logout" id="logout-link" class="nav-link">Выход</a>
         `;
     } else if (userRole === 'ADMIN') {
@@ -69,6 +70,7 @@ function updateMenu(userRole) {
     } else if (userRole === 'DB_ADMIN') {
         menuItems = `
             <a href="/db-admin/logs" class="nav-link">Логи пользователей</a>
+            <a href="/db-admin/statistics" class="nav-link">Статистика</a>
             <a href="/profile" class="nav-link">Профиль</a>
             <a href="/logout" id="logout-link" class="nav-link">Выход</a>
         `;

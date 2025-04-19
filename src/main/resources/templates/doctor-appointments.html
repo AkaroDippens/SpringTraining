@@ -6,6 +6,7 @@
     <title>Приёмы у доктора</title>
     <link rel="stylesheet" href="/scripts/styles/style.css">
     <link rel="stylesheet" href="/scripts/styles/profile.css">
+    <link rel="stylesheet" href="/scripts/styles/doctor-appointments.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="/scripts/header.js" defer></script>
 </head>
@@ -14,16 +15,24 @@
 
     <h1 class="section-title">ПРИЁМЫ У ДОКТОРА</h1>
 
-    <!-- Список приёмов -->
     <div class="medical-card-container" id="appointments-container">
         <h2 class="section-title-h2">МОИ ПРИЁМЫ</h2>
-        <div id="appointments-list"></div>
+        <div class="accordion">
+            <div class="accordion-item">
+                <button class="accordion-header" id="upcoming-header">Предстоящие</button>
+                <div class="accordion-content" id="upcoming-list"></div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header" id="past-header">Прошедшие</button>
+                <div class="accordion-content" id="past-list"></div>
+            </div>
+        </div>
     </div>
 
-    <!-- Модальное окно для отчёта о приёме -->
+    <!-- Модальное окно для редактирования -->
     <div id="appointment-modal" class="modal">
         <div class="modal-content">
-            <span id="close-modal" class="close">&times;</span>
+            <span id="close-modal" class="close">×</span>
             <h2 class="section-title-h2">Детали приёма</h2>
             <label for="reason">Причина:</label>
             <textarea id="reason" name="reason"></textarea>
@@ -33,6 +42,20 @@
             <textarea id="recommendations" name="recommendations"></textarea>
             <button type="button" id="close-appointment-modal" class="btn">Закрыть</button>
             <button type="button" id="save-changes" class="btn">Сохранить изменения</button>
+            <button type="button" id="complete-appointment" class="btn">Завершить</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для просмотра -->
+    <div id="view-appointment-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-view-modal" class="close">×</span>
+            <h2 class="section-title-h2">Информация о приёме</h2>
+            <div><strong>Дата:</strong> <span id="view-date"></span></div>
+            <div><strong>Причина:</strong> <span id="view-reason"></span></div>
+            <div><strong>Диагноз:</strong> <span id="view-diagnosis"></span></div>
+            <div><strong>Рекомендации:</strong> <span id="view-recommendations"></span></div>
+            <button type="button" id="close-view-appointment" class="btn">Закрыть</button>
         </div>
     </div>
 

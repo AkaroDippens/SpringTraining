@@ -123,6 +123,19 @@ class DoctorController(private val doctorService: DoctorService) {
         }
     }
 
+    @PutMapping("/{id}/building")
+    fun updateDoctorBuilding(
+        @PathVariable id: Long,
+        @RequestParam buildingId: Long,
+    ): ResponseEntity<Doctor?> {
+        val updatedDoctor = doctorService.updateDoctorBuilding(id, buildingId)
+        return if (updatedDoctor == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(updatedDoctor)
+        }
+    }
+
     @DeleteMapping("/{id}")
     fun deleteDoctor(
         @PathVariable id: Long,

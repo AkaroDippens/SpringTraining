@@ -2,6 +2,7 @@ package com.example.medicinesystemapi.service
 
 import com.example.medicinesystemapi.model.Record
 import com.example.medicinesystemapi.repository.RecordRepository
+import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -10,6 +11,7 @@ import java.time.Instant
 @Service
 class RecordServiceImpl(
     private val recordRepository: RecordRepository,
+    private val meterRegistry: MeterRegistry
 ) : RecordService {
     override fun findAllRecords(pageable: Pageable): Page<Record> {
         return recordRepository.findAll(pageable)
@@ -32,7 +34,16 @@ class RecordServiceImpl(
     }
 
     override fun addRecord(record: Record): Record? {
-        return recordRepository.save(record)
+        val savedRecord = recordRepository.save(record)
+        savedRecord.let {
+            // Увеличиваем счетчик записей для конкретного доктора
+            meterRegistry.counter(
+                "doctor.records.count",
+                "doctorId", it.idDoctor?.id.toString(),
+                "doctorName", it.idDoctor?.fullName ?: "unknown"
+            ).increment()
+        }
+        return savedRecord
     }
 
     override fun updateRecord(

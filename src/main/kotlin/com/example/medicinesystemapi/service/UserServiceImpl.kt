@@ -4,6 +4,8 @@ import com.example.medicinesystemapi.config.PasswordEncoderUtil
 import com.example.medicinesystemapi.model.User
 import com.example.medicinesystemapi.repository.RoleRepository
 import com.example.medicinesystemapi.repository.UserRepository
+import io.micrometer.core.instrument.MeterRegistry
+import jakarta.annotation.PostConstruct
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -12,7 +14,18 @@ import org.springframework.stereotype.Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
+    private val meterRegistry: MeterRegistry
 ) : UserService {
+
+    @PostConstruct
+    fun registerUserCountGauge() {
+        meterRegistry.gauge("users_count", this) { it.countUsers().toDouble() }
+    }
+
+    fun countUsers(): Long {
+        return userRepository.count()
+    }
+
     override fun findAllUsers(pageable: Pageable): Page<User> {
         return userRepository.findAll(pageable)
     }

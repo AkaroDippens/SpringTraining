@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const medicineIdInput = document.getElementById('medicine-id');
     const medicineNameInput = document.getElementById('medicine-name');
     const manufacturerInput = document.getElementById('manufacturer');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+
+    let medicines = [];
 
     let currentMedicineId = null;
 
@@ -55,6 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
     closeFormModal.onclick = () => {
         formModal.style.display = 'none';
     };
+
+    const searchMedicines = (query) => {
+        if (!query.trim()) return medicines;
+
+        return medicines.filter(medicine =>
+            medicine.medicineName.toLowerCase().includes(query.toLowerCase()) ||
+            medicine.manufacturer.toLowerCase().includes(query.toLowerCase())
+        );
+    };
+
+    searchBtn.onclick = () => {
+        const filteredMedicines = searchMedicines(searchInput.value);
+        renderMedicinesTable(filteredMedicines);
+    };
+
 
     // Открытие модального окна для добавления нового лекарства
     addMedicineBtn.onclick = () => {
@@ -130,7 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const fetchMedicines = () => {
         fetch('/api/medicines')
             .then(response => response.json())
-            .then(medicines => {
+            .then(fetchMedicines => {
+                medicines = fetchMedicines
                 renderMedicinesTable(medicines);
             })
             .catch(error => {

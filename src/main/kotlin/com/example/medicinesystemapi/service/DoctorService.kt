@@ -34,4 +34,6 @@ interface DoctorService {
         doctorId: Long,
         specializationId: Long,
     ): Doctor?
+
+    fun updateDoctorBuilding(doctorId: Long, buildingId: Long): Doctor?
 }

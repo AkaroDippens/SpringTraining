@@ -1,0 +1,16 @@
+management:
+  server:
+    port: 8816
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    prometheus:
+      enabled: true
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 1m
+
