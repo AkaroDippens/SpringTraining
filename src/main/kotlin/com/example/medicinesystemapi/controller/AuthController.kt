@@ -1,5 +1,6 @@
 package com.example.medicinesystemapi.controller
 
+import com.example.medicinesystemapi.config.JwtConfig
 import com.example.medicinesystemapi.config.PasswordEncoderUtil
 import com.example.medicinesystemapi.model.User
 import com.example.medicinesystemapi.service.UserService
@@ -22,11 +23,6 @@ class AuthController
     constructor(
         private val userService: UserService,
     ) {
-        // Секретный ключ для подписи токена (в реальном приложении храните его безопасно)
-        val SECRET_KEY: SecretKey =
-            Keys.hmacShaKeyFor(
-                "cb7f3bb50c74c595bf95eaab227b9101ecb38f99adb19f31360c374a958a18a466fa192c0b409771b00c1bb4e0b6fb57ee1541ff25ceca686b1d4161f0c4d92a".toByteArray(),
-            )
 
         @PostMapping("/login")
         fun login(
@@ -36,7 +32,7 @@ class AuthController
             val password = authRequest.password
 
             val user: User? = userService.findUserByMhiPolicy(mhiPolicy)
-            return if (user != null && PasswordEncoderUtil.matches(password, user.password)) {
+                return if (user != null && PasswordEncoderUtil.matches(password, user.password)) {
                 // Генерация токена
                 val token = generateToken(mhiPolicy, user.id?.toLong(), user.fullName, user.idRole?.roleName)
                 ResponseEntity.ok(AuthResponse(token, user))
@@ -62,7 +58,7 @@ class AuthController
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(SECRET_KEY)
+                .signWith(JwtConfig.SECRET_KEY)
                 .compact()
         }
     }

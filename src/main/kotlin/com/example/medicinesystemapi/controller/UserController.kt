@@ -4,12 +4,12 @@ import com.example.medicinesystemapi.model.User
 import com.example.medicinesystemapi.service.UserService
 import com.example.medicinesystemapi.validation.Validations
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "User", description = "Operations related to users")
-@CrossOrigin("http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
 class UserController(private val userService: UserService) {
@@ -37,8 +37,12 @@ class UserController(private val userService: UserService) {
 
     @GetMapping("/byname/{fullName}")
     fun getUserByName(
+        request: HttpServletRequest,
         @PathVariable fullName: String,
     ): ResponseEntity<List<User>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val users = userService.findUserByName(fullName)
         return if (users.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -49,8 +53,12 @@ class UserController(private val userService: UserService) {
 
     @GetMapping("/mhipolicy/{mhiPolicy}")
     fun getUserByMhiPolicy(
+        request: HttpServletRequest,
         @PathVariable mhiPolicy: String,
     ): ResponseEntity<User?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val user = userService.findUserByMhiPolicy(mhiPolicy)
         return if (user?.mhiPolicy.isNullOrEmpty()) {
             ResponseEntity.noContent().build()

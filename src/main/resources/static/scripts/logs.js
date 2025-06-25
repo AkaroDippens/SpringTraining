@@ -1,17 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM элементы
     const logsTableBody = document.getElementById('logs-table-body');
     const paginationContainer = document.getElementById('pagination');
     const clearLogsButton = document.getElementById('clear-logs-btn');
     const exportLogsButton = document.getElementById('export-logs-btn');
     const importLogsButton = document.getElementById('import-logs-btn');
     const importLogsInput = document.getElementById('import-logs-input');
+
+    // Константы и состояние
     const itemsPerPage = 10;
     let currentPage = 1;
-    let logs = []; // Данные логов
+    let logs = [];
+    const authToken = localStorage.getItem('authToken');
 
-    // Функция для вывода данных в таблицу
+    // Рендер таблицы логов
     const renderLogsTable = (paginatedLogs) => {
-        logsTableBody.innerHTML = ''; // Очистить таблицу перед рендером
+        logsTableBody.innerHTML = '';
+
         paginatedLogs.forEach(log => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -26,9 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    // Рендер пагинации
     const renderPagination = (totalItems) => {
         paginationContainer.innerHTML = '';
         const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const maxPagesToShow = 5;
 
         // Кнопка "Предыдущая"
         const prevButton = document.createElement('button');
@@ -44,8 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         paginationContainer.appendChild(prevButton);
 
-        // Отображение страниц
-        const maxPagesToShow = 5; // Максимальное количество страниц для отображения
+        // Нумерация страниц
         let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
         let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
         startPage = Math.max(1, endPage - maxPagesToShow + 1);
@@ -77,42 +83,41 @@ document.addEventListener('DOMContentLoaded', () => {
         paginationContainer.appendChild(nextButton);
     };
 
+    // Обновление таблицы
     const updateTable = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        const paginatedLogs = logs.slice(startIndex, endIndex);
-        renderLogsTable(paginatedLogs);
+        renderLogsTable(logs.slice(startIndex, endIndex));
     };
 
-    // Получаем данные о логах с сервера
+    // Загрузка логов с сервера
     const fetchLogs = () => {
-        fetch('/api/logs')
+        fetch('/api/logs', { headers: { 'Authorization': `Bearer ${authToken}` } })
             .then(response => response.json())
             .then(fetchedLogs => {
-                // Сортируем логи по полю timestamp в порядке убывания
                 logs = fetchedLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                renderPagination(logs.length); // Отображаем пагинацию
-                updateTable(); // Отображаем первую страницу
+                renderPagination(logs.length);
+                updateTable();
             })
-            .catch(error => {
-                console.error('Ошибка при получении логов:', error);
-            });
+            .catch(error => console.error('Ошибка при получении логов:', error));
     };
 
+    // Обработчики событий
     clearLogsButton.addEventListener('click', () => {
-        fetch('/api/logs', { method: 'DELETE' })
+        fetch('/api/logs', {
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            method: 'DELETE'
+        })
             .then(response => response.text())
             .then(message => {
                 alert(message);
-                fetchLogs(); // Обновляем таблицу после очистки
+                fetchLogs();
             })
-            .catch(error => {
-                console.error('Ошибка при очистке логов:', error);
-            });
+            .catch(error => console.error('Ошибка при очистке логов:', error));
     });
 
     exportLogsButton.addEventListener('click', () => {
-        fetch('/api/logs/export')
+        fetch('/api/logs/export', { headers: { 'Authorization': `Bearer ${authToken}` } })
             .then(response => response.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);
@@ -123,35 +128,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 a.click();
                 a.remove();
             })
-            .catch(error => {
-                console.error('Ошибка при экспорте логов:', error);
-            });
+            .catch(error => console.error('Ошибка при экспорте логов:', error));
     });
 
-    importLogsButton.addEventListener('click', () => {
-        importLogsInput.click();
-    });
+    importLogsButton.addEventListener('click', () => importLogsInput.click());
 
     importLogsInput.addEventListener('change', (event) => {
         const file = event.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
+        if (!file) return;
 
-            fetch('/api/logs/import', {
-                method: 'POST',
-                body: formData
-            })
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/api/logs/import', {
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            method: 'POST',
+            body: formData
+        })
             .then(response => response.text())
             .then(message => {
                 alert(message);
-                fetchLogs(); // Обновляем таблицу после импорта
+                fetchLogs();
             })
-            .catch(error => {
-                console.error('Ошибка при импорте логов:', error);
-            });
-        }
+            .catch(error => console.error('Ошибка при импорте логов:', error));
     });
 
+    // Инициализация
     fetchLogs();
 });

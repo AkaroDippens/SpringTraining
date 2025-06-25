@@ -27,7 +27,6 @@
         <table class="medicine-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Название лекарства</th>
                     <th>Производитель</th>
                     <th>Действия</th>
@@ -37,6 +36,9 @@
                 <!-- Данные будут добавляться динамически через JavaScript -->
             </tbody>
         </table>
+
+        <!-- Пагинация -->
+        <div id="pagination" class="pagination"></div>
     </div>
 
     <!-- Модальное окно с деталями лекарства -->
@@ -44,7 +46,6 @@
         <div class="modal-content">
             <span class="close-button" id="close-modal">&times;</span>
             <h2>Детали лекарства</h2>
-            <p id="medicine-detail-id"><strong>ID:</strong> </p>
             <p id="medicine-detail-name"><strong>Название лекарства:</strong> </p>
             <p id="medicine-detail-manufacturer"><strong>Производитель:</strong> </p>
             <button id="edit-medicine-btn" class="btn">Редактировать</button>

@@ -1,136 +1,178 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM элементы
     const tableBody = document.getElementById('specialization-table-body');
+    const paginationContainer = document.getElementById('pagination');
     const detailsModal = document.getElementById('specialization-details-modal');
     const formModal = document.getElementById('specialization-form-modal');
-    const closeDetailsModal = document.getElementById('close-modal');
-    const closeFormModal = document.getElementById('close-form-modal');
-    const addSpecializationBtn = document.getElementById('add-specialization-btn');
-    const editSpecializationBtn = document.getElementById('edit-specialization-btn');
-    const deleteSpecializationBtn = document.getElementById('delete-specialization-btn');
-    const specializationForm = document.getElementById('specialization-form');
-    const formTitle = document.getElementById('form-title');
-    const specializationIdInput = document.getElementById('specialization-id');
-    const specializationNameInput = document.getElementById('specialization-name');
+    const addBtn = document.getElementById('add-specialization-btn');
+    const editBtn = document.getElementById('edit-specialization-btn');
+    const deleteBtn = document.getElementById('delete-specialization-btn');
+    const form = document.getElementById('specialization-form');
 
-    let currentSpecializationId = null;
+    // Константы и состояние
+    const itemsPerPage = 10;
+    let currentPage = 1;
+    let specializations = [];
+    const authToken = localStorage.getItem('authToken');
 
-    // Функция для вывода данных в таблицу
-    const renderSpecializationsTable = (specializations) => {
-        tableBody.innerHTML = ''; // Очистить таблицу перед рендером
-        specializations.forEach(specialization => {
+    // Рендер таблицы
+    const renderTable = (paginatedSpecializations) => {
+        tableBody.innerHTML = '';
+
+        paginatedSpecializations.forEach(spec => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${specialization.id}</td>
-                <td>${specialization.specializationName}</td>
-                <td><button class="btn" onclick="showSpecializationDetails(${specialization.id})">Подробнее</button></td>
+                <td>${spec.specializationName}</td>
+                <td>
+                    <button class="btn" onclick="showSpecializationDetails(${spec.id})">
+                        Подробнее
+                    </button>
+                </td>
             `;
             tableBody.appendChild(row);
         });
     };
 
-    // Функция для отображения детальной информации
-    window.showSpecializationDetails = (specializationId) => {
-        fetch(`/api/specializations/${specializationId}`)
+    // Рендер пагинации
+    const renderPagination = (totalItems) => {
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const maxPagesToShow = 5;
+
+        // Нумерация страниц
+        let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                renderPagination(totalItems);
+                updateTable();
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+    };
+
+    // Обновление таблицы
+    const updateTable = () => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        renderTable(specializations.slice(startIndex, endIndex));
+    };
+
+    // Показать детали
+    window.showSpecializationDetails = (id) => {
+        fetch(`/api/specializations/${id}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        })
             .then(response => response.json())
-            .then(specialization => {
-                document.getElementById('specialization-detail-id').textContent = `ID: ${specialization.id}`;
-                document.getElementById('specialization-detail-name').textContent = `Название специализации: ${specialization.specializationName}`;
-                currentSpecializationId = specialization.id;
+            .then(spec => {
+                document.getElementById('specialization-detail-name').textContent =
+                    `Название: ${spec.specializationName}`;
+
+                currentSpecializationId = spec.id;
                 detailsModal.style.display = 'block';
             })
-            .catch(error => {
-                console.error('Ошибка при получении данных о специализации:', error);
-            });
+            .catch(error => console.error('Ошибка загрузки специализации:', error));
     };
 
-    // Закрытие модального окна с деталями
-    closeDetailsModal.onclick = () => {
-        detailsModal.style.display = 'none';
-    };
+    // Обработка формы
+    const handleFormSubmit = (event) => {
+        event.preventDefault();
 
-    // Закрытие модального окна с формой
-    closeFormModal.onclick = () => {
-        formModal.style.display = 'none';
-    };
+        const specialization = {
+            id: document.getElementById('specialization-id').value || null,
+            specializationName: document.getElementById('specialization-name').value
+        };
 
-    // Открытие модального окна для добавления новой специализации
-    addSpecializationBtn.onclick = () => {
-        formTitle.textContent = 'Добавить специализацию';
-        specializationIdInput.value = '';
-        specializationNameInput.value = '';
-        formModal.style.display = 'block';
-    };
+        const method = specialization.id ? 'PUT' : 'POST';
+        const url = specialization.id
+            ? `/api/specializations/${specialization.id}`
+            : '/api/specializations';
 
-    // Открытие модального окна для редактирования специализации
-    editSpecializationBtn.onclick = () => {
-        formTitle.textContent = 'Редактировать специализацию';
-        specializationIdInput.value = currentSpecializationId;
-        specializationNameInput.value = document.getElementById('specialization-detail-name').textContent.split(': ')[1];
-        formModal.style.display = 'block';
-    };
-
-    // Удаление специализации
-    deleteSpecializationBtn.onclick = () => {
-        if (confirm('Вы уверены, что хотите удалить эту специализацию?')) {
-            fetch(`/api/specializations/${currentSpecializationId}`, {
-                method: 'DELETE'
+        fetch(url, {
+            method,
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(specialization)
+        })
+            .then(response => {
+                if (response.ok) {
+                    fetchSpecializations();
+                    formModal.style.display = 'none';
+                } else {
+                    alert('Ошибка сохранения специализации');
+                }
             })
+            .catch(error => console.error('Ошибка сохранения:', error));
+    };
+
+    // Удаление
+    const deleteSpecialization = () => {
+        if (!confirm('Удалить специализацию?')) return;
+
+        fetch(`/api/specializations/${currentSpecializationId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` },
+            method: 'DELETE'
+        })
             .then(response => {
                 if (response.ok) {
                     fetchSpecializations();
                     detailsModal.style.display = 'none';
                 } else {
-                    alert('Ошибка при удалении специализации');
+                    alert('Ошибка удаления');
                 }
             })
-            .catch(error => {
-                console.error('Ошибка при удалении специализации:', error);
-            });
-        }
+            .catch(error => console.error('Ошибка удаления:', error));
     };
 
-    // Обработка отправки формы
-    specializationForm.onsubmit = (event) => {
-        event.preventDefault();
-        const specialization = {
-            id: specializationIdInput.value || null,
-            specializationName: specializationNameInput.value
-        };
-
-        const method = specialization.id ? 'PUT' : 'POST';
-        const url = specialization.id ? `/api/specializations/${specialization.id}` : '/api/specializations';
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(specialization)
-        })
-        .then(response => {
-            if (response.ok) {
-                fetchSpecializations();
-                formModal.style.display = 'none';
-            } else {
-                alert('Ошибка при сохранении специализации');
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка при сохранении специализации:', error);
-        });
-    };
-
-    // Получаем данные о специализациях с сервера
+    // Загрузка данных
     const fetchSpecializations = () => {
-        fetch('/api/specializations')
+        fetch('/api/specializations', {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        })
             .then(response => response.json())
-            .then(specializations => {
-                renderSpecializationsTable(specializations);
+            .then(fetchedSpecializations => {
+                specializations = fetchedSpecializations.filter(spec => spec !== null);
+                renderPagination(specializations.length);
+                updateTable();
             })
-            .catch(error => {
-                console.error('Ошибка при получении списка специализаций:', error);
-            });
+            .catch(error => console.error('Ошибка загрузки:', error));
     };
 
+    // Обработчики событий
+    document.getElementById('close-modal').addEventListener('click', () => {
+        detailsModal.style.display = 'none';
+    });
+
+    document.getElementById('close-form-modal').addEventListener('click', () => {
+        formModal.style.display = 'none';
+    });
+
+    addBtn.addEventListener('click', () => {
+        document.getElementById('form-title').textContent = 'Добавить специализацию';
+        document.getElementById('specialization-id').value = '';
+        document.getElementById('specialization-name').value = '';
+        formModal.style.display = 'block';
+    });
+
+    editBtn.addEventListener('click', () => {
+        document.getElementById('form-title').textContent = 'Редактировать специализацию';
+        document.getElementById('specialization-id').value = currentSpecializationId;
+        document.getElementById('specialization-name').value =
+            document.getElementById('specialization-detail-name').textContent.split(': ')[1];
+        formModal.style.display = 'block';
+    });
+
+    deleteBtn.addEventListener('click', deleteSpecialization);
+    form.addEventListener('submit', handleFormSubmit);
+
+    // Инициализация
     fetchSpecializations();
 });

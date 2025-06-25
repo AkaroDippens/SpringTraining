@@ -1,0 +1,17 @@
+import org.springframework.context.annotation.Configuration
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+import org.springframework.beans.factory.annotation.Autowired
+
+@Configuration
+class WebConfig : WebMvcConfigurer {
+
+    @Autowired
+    private lateinit var authInterceptor: AuthInterceptor
+
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        registry.addInterceptor(authInterceptor)
+            .addPathPatterns("/api/**") // Применяем Interceptor только к эндпоинтам /api/**
+            .excludePathPatterns("/api/auth/**", "/api/users/add") // Исключаем эндпоинты авторизации
+    }
+}

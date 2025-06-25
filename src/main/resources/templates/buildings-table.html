@@ -22,7 +22,6 @@
         <table class="building-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Название здания</th>
                     <th>Адрес</th>
                     <th>Контактный номер</th>
@@ -33,6 +32,9 @@
                 <!-- Данные будут добавляться динамически через JavaScript -->
             </tbody>
         </table>
+
+        <!-- Пагинация -->
+        <div id="pagination" class="pagination"></div>
     </div>
 
     <!-- Модальное окно с деталями здания -->
@@ -40,7 +42,6 @@
         <div class="modal-content">
             <span class="close-button" id="close-modal">&times;</span>
             <h2>Детали здания</h2>
-            <p id="building-detail-id"><strong>ID:</strong> </p>
             <p id="building-detail-name"><strong>Название здания:</strong> </p>
             <p id="building-detail-address"><strong>Адрес:</strong> </p>
             <p id="building-detail-contact"><strong>Контактный номер:</strong> </p>

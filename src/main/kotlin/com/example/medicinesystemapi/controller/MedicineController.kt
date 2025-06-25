@@ -2,6 +2,8 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Medicine
 import com.example.medicinesystemapi.service.MedicineService
+import com.example.medicinesystemapi.validation.Validations
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,8 +11,14 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/medicines")
 class MedicineController(private val medicineService: MedicineService) {
+
+    val validations = Validations()
+
     @GetMapping
-    fun getAllMedicines(): ResponseEntity<List<Medicine?>> {
+    fun getAllMedicines(request: HttpServletRequest): ResponseEntity<List<Medicine?>> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val medicines = medicineService.findAllMedicinesList()
         return if (medicines.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -21,8 +29,12 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @GetMapping("/{id}")
     fun getMedicineById(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Medicine?> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val medicine = medicineService.findMedicineById(id)
         return if (medicine == null) {
             ResponseEntity.notFound().build()
@@ -33,8 +45,12 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @GetMapping("/byname/{medicineName}")
     fun getMedicineByName(
+        request: HttpServletRequest,
         @PathVariable medicineName: String,
     ): ResponseEntity<List<Medicine>> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val medicines = medicineService.findMedicineByName(medicineName)
         return if (medicines.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -45,8 +61,12 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @PostMapping
     fun addMedicine(
+        request: HttpServletRequest,
         @RequestBody medicine: Medicine,
     ): ResponseEntity<Medicine?> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (medicine.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -63,9 +83,13 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @PutMapping("/{id}")
     fun updateMedicine(
+        request: HttpServletRequest,
         @PathVariable id: Long,
         @RequestBody medicine: Medicine,
     ): ResponseEntity<Medicine?> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (medicine.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -80,8 +104,12 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @DeleteMapping("/{id}")
     fun deleteMedicine(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         medicineService.findMedicineById(id) ?: return ResponseEntity.notFound().build()
         medicineService.deleteMedicine(id)
         return ResponseEntity.noContent().build()
@@ -89,8 +117,12 @@ class MedicineController(private val medicineService: MedicineService) {
 
     @DeleteMapping("/multiple")
     fun deleteMultipleMedicines(
+        request: HttpServletRequest,
         @RequestBody medicineIds: List<Long>,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN", "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (medicineIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

@@ -2,7 +2,9 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Specialization
 import com.example.medicinesystemapi.service.SpecializationService
+import com.example.medicinesystemapi.validation.Validations
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -11,8 +13,14 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/specializations")
 class SpecializationController(private val specializationService: SpecializationService) {
+
+    val validations = Validations()
+
     @GetMapping
-    fun getAllSpecializations(): ResponseEntity<List<Specialization?>> {
+    fun getAllSpecializations(request: HttpServletRequest): ResponseEntity<List<Specialization?>> {
+        if (!validations.hasAnyRole(request, "ADMIN", "USER")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val specializations = specializationService.findAllSpecializationsList()
         return if (specializations.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -23,8 +31,12 @@ class SpecializationController(private val specializationService: Specialization
 
     @GetMapping("/{id}")
     fun getSpecializationById(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Specialization?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val specialization = specializationService.findSpecializationById(id)
         return if (specialization == null) {
             ResponseEntity.notFound().build()
@@ -35,8 +47,12 @@ class SpecializationController(private val specializationService: Specialization
 
     @GetMapping("/byname/{specializationName}")
     fun getSpecializationByName(
+        request: HttpServletRequest,
         @PathVariable specializationName: String,
     ): ResponseEntity<List<Specialization>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val specializations = specializationService.findSpecializationByName(specializationName)
         return if (specializations.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -47,8 +63,12 @@ class SpecializationController(private val specializationService: Specialization
 
     @PostMapping
     fun addSpecialization(
+        request: HttpServletRequest,
         @RequestBody specialization: Specialization,
     ): ResponseEntity<Specialization?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (specialization.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -65,9 +85,13 @@ class SpecializationController(private val specializationService: Specialization
 
     @PutMapping("/{id}")
     fun updateSpecialization(
+        request: HttpServletRequest,
         @PathVariable id: Long,
         @RequestBody specialization: Specialization,
     ): ResponseEntity<Specialization?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (specialization.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -82,8 +106,12 @@ class SpecializationController(private val specializationService: Specialization
 
     @DeleteMapping("/{id}")
     fun deleteSpecialization(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         specializationService.findSpecializationById(id) ?: return ResponseEntity.notFound().build()
         specializationService.deleteSpecialization(id)
         return ResponseEntity.noContent().build()
@@ -91,8 +119,12 @@ class SpecializationController(private val specializationService: Specialization
 
     @DeleteMapping("/multiple")
     fun deleteMultipleSpecializations(
+        request: HttpServletRequest,
         @RequestBody specializationIds: List<Long>,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (specializationIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }

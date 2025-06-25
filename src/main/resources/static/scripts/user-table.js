@@ -1,214 +1,192 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM элементы
     const tableBody = document.getElementById('user-table-body');
-    const tableHeaders = document.querySelectorAll('.user-table th[data-sort]');
     const roleFilter = document.getElementById('role-filter');
-    const applyRoleFilterButton = document.getElementById('apply-role-filter');
-    const resetRoleFilterButton = document.getElementById('reset-role-filter');
-    const modal = document.getElementById('user-details-modal');
-    const closeModal = document.getElementById('close-modal');
-    const paginationContainer = document.getElementById('pagination');
-    const itemsPerPage = 10;
     const searchInput = document.getElementById('search-input');
-    const searchBtn = document.getElementById('search-btn');
+    const modal = document.getElementById('user-details-modal');
 
+    // Константы
+    const itemsPerPage = 10;
+
+    // Состояние
+    let users = [];
     let currentPage = 1;
-    let users = []; // Данные пользователей
-    let currentSortColumn = null;
-    let currentSortDirection = 'asc'; // Возможные значения: 'asc', 'desc'
+    let currentSort = { column: null, direction: 'asc' };
+    const authToken = localStorage.getItem('authToken');
 
-    // Функция для вывода данных в таблицу
-    const renderUsersTable = (filteredUsers) => {
+    // Рендер таблицы
+    const renderTable = (filteredUsers) => {
         tableBody.innerHTML = '';
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+        const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 
         paginatedUsers.forEach(user => {
             const row = document.createElement('tr');
-            const roleChangeButton = user.roleName === 'DOCTOR'
-                ? `<button class="btn-warning" onclick="changeUserRole(${user.id}, 3)">Снять роль доктора</button>`
-                : `<button class="btn-primary" onclick="changeUserRole(${user.id}, 4)">Назначить доктором</button>`;
+            const roleButton = user.roleName === 'DOCTOR'
+                ? `<button class="btn-warning" onclick="changeUserRole(${user.id}, 3)">
+                    Снять роль доктора
+                   </button>`
+                : `<button class="btn-primary" onclick="changeUserRole(${user.id}, 4)">
+                    Назначить доктором
+                   </button>`;
 
             row.innerHTML = `
-                <td>${user.id}</td>
                 <td>${user.fullName}</td>
                 <td>${user.contactNumber || '—'}</td>
                 <td>${user.mhiPolicy}</td>
                 <td>${user.birthDate || '—'}</td>
                 <td>${user.roleName}</td>
                 <td>
-                    <button class="btn" onclick="showUserDetails(${user.id})">Подробнее</button>
-                    ${roleChangeButton}
+                    <button class="btn" onclick="showUserDetails(${user.id})">
+                        Подробнее
+                    </button>
+                    ${roleButton}
                 </td>
             `;
             tableBody.appendChild(row);
         });
 
-        // Передаем длину полного массива, а не paginatedUsers
         renderPagination(filteredUsers.length);
     };
 
+    // Пагинация
     const renderPagination = (totalItems) => {
-        paginationContainer.innerHTML = '';
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+        const pageCount = Math.ceil(totalItems / itemsPerPage);
 
-        for (let i = 1; i <= totalPages; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = i;
-            pageButton.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
-            pageButton.addEventListener('click', () => {
+        for (let i = 1; i <= pageCount; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+            btn.addEventListener('click', () => {
                 currentPage = i;
-                const filteredUsers = filterByRole();
-                renderUsersTable(filteredUsers);
+                renderTable(filterUsers());
             });
-            paginationContainer.appendChild(pageButton);
+            pagination.appendChild(btn);
         }
     };
 
-    // Обновляем функцию изменения роли
-    window.changeUserRole = (userId, newRoleId) => {
-        fetch(`/api/users/${userId}/role?newRoleId=${newRoleId}`, {
+    // Фильтрация
+    const filterUsers = () => {
+        let filtered = [...users];
+        const role = roleFilter.value.trim();
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (role) filtered = filtered.filter(u => u.roleName === role);
+        if (query) {
+            filtered = filtered.filter(u =>
+                u.fullName.toLowerCase().includes(query) ||
+                (u.contactNumber && u.contactNumber.includes(query)) ||
+                (u.mhiPolicy && u.mhiPolicy.includes(query))
+            );
+        }
+
+        if (currentSort.column) {
+            filtered.sort((a, b) => {
+                const valA = a[currentSort.column] ?? '';
+                const valB = b[currentSort.column] ?? '';
+                return currentSort.direction === 'asc'
+                    ? String(valA).localeCompare(String(valB))
+                    : String(valB).localeCompare(String(valA));
+            });
+        }
+
+        return filtered;
+    };
+
+    // Сортировка
+    const setupSorting = () => {
+        document.querySelectorAll('.user-table th[data-sort]').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.dataset.sort;
+                currentSort = {
+                    column,
+                    direction: currentSort.column === column && currentSort.direction === 'asc'
+                        ? 'desc'
+                        : 'asc'
+                };
+                renderTable(filterUsers());
+            });
+        });
+    };
+
+    // Изменение роли
+    window.changeUserRole = (userId, roleId) => {
+        fetch(`/api/users/${userId}/role?newRoleId=${roleId}`, {
             method: 'PUT',
             headers: {
+                'Authorization': `Bearer ${authToken}`,
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => {
-            if (response.ok) {
-                // Обновляем таблицу после смены роли
-                return fetch('/api/users')
-                    .then(response => response.json())
-                    .then(fetchedUsers => {
-                        users = fetchedUsers;
-                        renderUsersTable(users);
-                    });
-            } else {
-                throw new Error('Failed to change user role');
-            }
-        })
-        .catch(error => {
-            console.error('Error changing user role:', error);
-            alert('Failed to change user role. Please try again.');
-        });
+            .then(response => {
+                if (response.ok) return fetchUsers();
+                throw new Error('Ошибка изменения роли');
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Не удалось изменить роль');
+            });
     };
 
-    const searchUsers = (query) => {
-        if (!query.trim()) return users;
-
-        return users.filter(user =>
-            user.fullName.toLowerCase().includes(query.toLowerCase()) ||
-            (user.contactNumber && user.contactNumber.includes(query)) ||
-            (user.mhiPolicy && user.mhiPolicy.includes(query))
-        );
-    };
-
-    // Обработчик поиска
-    searchBtn.onclick = () => {
-        const filteredUsers = searchUsers(searchInput.value);
-        renderUsersTable(filteredUsers);
-    };
-
-    // Функция для сортировки
-    const sortUsers = (column, filteredUsers = users) => {
-        // Определяем направление сортировки
-        if (currentSortColumn === column) {
-            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            currentSortColumn = column;
-            currentSortDirection = 'asc';
-        }
-
-        // Сортируем пользователей
-        const sortedUsers = [...filteredUsers].sort((a, b) => {
-            const valueA = a[column] ?? ''; // Значение A
-            const valueB = b[column] ?? ''; // Значение B
-
-            // Если значения строки, сравниваем их регистронезависимо
-            if (typeof valueA === 'string' && typeof valueB === 'string') {
-                return currentSortDirection === 'asc'
-                    ? valueA.localeCompare(valueB)
-                    : valueB.localeCompare(valueA);
-            }
-
-            // Для чисел и дат
-            if (typeof valueA === 'number' || valueA instanceof Date) {
-                return currentSortDirection === 'asc' ? valueA - valueB : valueB - valueA;
-            }
-
-            return 0; // Если не строка и не число, оставляем как есть
-        });
-
-        renderUsersTable(sortedUsers);
-    };
-
-    // Добавляем обработчики событий на заголовки
-    tableHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            const column = header.dataset.sort;
-            const filteredUsers = filterByRole(); // Учитываем текущую фильтрацию по роли
-            sortUsers(column, filteredUsers);
-        });
-    });
-
-    // Функция для фильтрации по роли
-    const filterByRole = () => {
-        const selectedRole = roleFilter.value.trim();
-        return selectedRole === ''
-            ? users // Если роль не выбрана, возвращаем всех пользователей
-            : users.filter(user => user.roleName === selectedRole);
-    };
-
-    // Применение фильтра по роли
-    applyRoleFilterButton.onclick = () => {
-        const filteredUsers = filterByRole();
-        renderUsersTable(filteredUsers); // Отображаем отфильтрованных пользователей
-    };
-
-    // Сброс фильтра по роли
-    resetRoleFilterButton.onclick = () => {
-        roleFilter.value = '';
-        renderUsersTable(users); // Показываем всех пользователей
-    };
-
-    // Функция для отображения деталей пользователя
+    // Показать детали
     window.showUserDetails = (userId) => {
-        fetch(`/api/users/${userId}`)
+        fetch(`/api/users/${userId}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        })
             .then(response => response.json())
             .then(user => {
-                document.getElementById('user-detail-id').textContent = `ID: ${user.id}`;
                 document.getElementById('user-detail-full-name').textContent = `ФИО: ${user.fullName}`;
-                document.getElementById('user-detail-contact').textContent = `Номер телефона: ${user.contactNumber || '—'}`;
-                document.getElementById('user-detail-policy').textContent = `Полис ОМС: ${user.mhiPolicy}`;
+                document.getElementById('user-detail-contact').textContent = `Телефон: ${user.contactNumber || '—'}`;
+                document.getElementById('user-detail-policy').textContent = `Полис: ${user.mhiPolicy}`;
                 document.getElementById('user-detail-birth-date').textContent = `Дата рождения: ${user.birthDate || '—'}`;
                 document.getElementById('user-detail-role').textContent = `Роль: ${user.roleName}`;
 
                 modal.style.display = 'block';
             })
-            .catch(error => {
-                console.error('Ошибка при получении данных о пользователе:', error);
-            });
+            .catch(error => console.error('Ошибка загрузки:', error));
     };
 
-    // Закрытие модального окна
-    closeModal.onclick = () => {
-        modal.style.display = 'none';
-    };
-
-    // Закрытие модального окна при клике вне его
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    };
-
-    // Получаем данные о пользователях с сервера
-    fetch('/api/users')
-        .then(response => response.json())
-        .then(fetchedUsers => {
-            users = fetchedUsers; // Сохраняем пользователей
-            renderUsersTable(users); // Отображаем полный список
+    // Загрузка данных
+    const fetchUsers = () => {
+        fetch('/api/users', {
+            headers: { 'Authorization': `Bearer ${authToken}` }
         })
-        .catch(error => {
-            console.error('Ошибка при получении списка пользователей:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                users = data;
+                renderTable(filterUsers());
+            })
+            .catch(error => console.error('Ошибка загрузки:', error));
+    };
+
+    // Обработчики событий
+    document.getElementById('close-modal').addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    document.getElementById('apply-role-filter').addEventListener('click', () => {
+        currentPage = 1;
+        renderTable(filterUsers());
+    });
+
+    document.getElementById('reset-role-filter').addEventListener('click', () => {
+        roleFilter.value = '';
+        currentPage = 1;
+        renderTable(filterUsers());
+    });
+
+    document.getElementById('search-btn').addEventListener('click', () => {
+        currentPage = 1;
+        renderTable(filterUsers());
+    });
+
+    window.onclick = (event) => {
+        if (event.target === modal) modal.style.display = 'none';
+    };
+
+    // Инициализация
+    setupSorting();
+    fetchUsers();
 });

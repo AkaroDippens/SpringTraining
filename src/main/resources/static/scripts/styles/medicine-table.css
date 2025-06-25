@@ -124,6 +124,39 @@ body {
     background-color: #48daeb;
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pagination-btn {
+    margin: 0 0.5rem 3rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid #0061ff;
+    background-color: white;
+    color: #0061ff;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination-btn.active {
+    background-color: #0061ff;
+    color: white;
+}
+
+.pagination-btn:hover {
+    background-color: #2d82d3;
+    color: white;
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
 .filters {
     display: flex;
     gap: 1rem;

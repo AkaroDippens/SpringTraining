@@ -2,8 +2,10 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Appointment
 import com.example.medicinesystemapi.service.AppointmentService
+import com.example.medicinesystemapi.validation.Validations
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,8 +15,13 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/appointments")
 class AppointmentController(private val appointmentService: AppointmentService) {
 
+    val validations = Validations()
+
     @GetMapping
-    fun getAllAppointments(): ResponseEntity<List<Appointment?>> {
+    fun getAllAppointments(request: HttpServletRequest): ResponseEntity<List<Appointment?>> {
+        if (!validations.hasAnyRole(request, "DOCTOR", "USER", "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val appointments = appointmentService.findAllAppointmentsList()
         return if (appointments.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -25,8 +32,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @GetMapping("/{id}")
     fun getAppointmentById(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Appointment?> {
+        if (!validations.hasAnyRole(request, "DOCTOR", "USER", "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val appointment = appointmentService.findAppointmentById(id)
         return if (appointment == null) {
             ResponseEntity.notFound().build()
@@ -37,8 +48,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @GetMapping("/record/{recordId}")
     fun getAppointmentByRecordId(
+        request: HttpServletRequest,
         @PathVariable recordId: Int,
     ): ResponseEntity<Appointment> {
+        if (!validations.hasAnyRole(request, "DOCTOR", "USER", "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val appointment = appointmentService.findAppointmentByRecordId(recordId)
         return if (appointment != null) {
             ResponseEntity.ok(appointment)
@@ -49,8 +64,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @GetMapping("/doctor/{doctorId}")
     fun getAppointmentsByDoctorId(
+        request: HttpServletRequest,
         @PathVariable doctorId: Int,
     ): ResponseEntity<List<Appointment>> {
+        if (!validations.hasAnyRole(request, "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val appointments = appointmentService.findAppointmentsByDoctorId(doctorId)
         return if (appointments != null) {
             ResponseEntity.ok(appointments)
@@ -61,8 +80,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @PostMapping
     fun addAppointment(
+        request: HttpServletRequest,
         @RequestBody appointment: Appointment,
     ): ResponseEntity<Appointment?> {
+        if (!validations.hasAnyRole(request, "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (appointment.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -76,9 +99,14 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @PutMapping("/{id}")
     fun updateAppointment(
+        request: HttpServletRequest,
         @PathVariable id: Long,
         @RequestBody partialUpdate: Map<String, Any>,
     ): ResponseEntity<Appointment?> {
+        if (!validations.hasAnyRole(request, "DOCTOR")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
         if (id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -99,8 +127,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @DeleteMapping("/{id}")
     fun deleteAppointment(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         appointmentService.findAppointmentById(id) ?: return ResponseEntity.notFound().build()
         appointmentService.deleteAppointment(id)
         return ResponseEntity.noContent().build()
@@ -108,8 +140,12 @@ class AppointmentController(private val appointmentService: AppointmentService) 
 
     @DeleteMapping("/multiple")
     fun deleteMultipleAppointments(
+        request: HttpServletRequest,
         @RequestBody appointmentIds: List<Long>,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (appointmentIds.isEmpty()) {
             return ResponseEntity.badRequest().build()
         }
@@ -117,5 +153,3 @@ class AppointmentController(private val appointmentService: AppointmentService) 
         return ResponseEntity.noContent().build()
     }
 }
-
-

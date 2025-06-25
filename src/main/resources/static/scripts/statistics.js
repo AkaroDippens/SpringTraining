@@ -1,14 +1,11 @@
-// Функция для обновления всех iframe на странице
-function refreshIframes() {
-// Находим все iframe на странице
-const iframes = document.querySelectorAll('iframe');
+document.addEventListener('DOMContentLoaded', () => {
+    const refreshButton = document.getElementById('refresh-button');
 
-// Перезагружаем каждый iframe
-iframes.forEach(iframe => {
-  iframe.src = iframe.src; // Перезагружаем iframe
+    const refreshIframes = () => {
+        document.querySelectorAll('iframe').forEach(iframe => {
+            iframe.src = iframe.src; // Перезагрузка iframe
+        });
+    };
+
+    refreshButton.addEventListener('click', refreshIframes);
 });
-}
-
-// Находим кнопку и добавляем обработчик события
-const refreshButton = document.getElementById('refresh-button');
-refreshButton.addEventListener('click', refreshIframes);

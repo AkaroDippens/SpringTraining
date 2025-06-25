@@ -3,9 +3,11 @@ package com.example.medicinesystemapi.controller
 import com.example.medicinesystemapi.model.Building
 import com.example.medicinesystemapi.service.BuildingService
 import com.example.medicinesystemapi.service.MetricApiRequestTimerService
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import com.example.medicinesystemapi.validation.Validations
 
 @RestController
 @RequestMapping("/api/buildings")
@@ -13,6 +15,7 @@ class BuildingController(
     private val buildingService: BuildingService,
     private val metricApiRequestTimerService: MetricApiRequestTimerService
 ) {
+    val validations = Validations()
 
     @GetMapping("/error")
     fun triggerError(): ResponseEntity<String> {
@@ -20,7 +23,10 @@ class BuildingController(
     }
 
     @GetMapping
-    fun getAllBuildings(): ResponseEntity<List<Building?>> {
+    fun getAllBuildings(request: HttpServletRequest): ResponseEntity<List<Building?>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             val buildings = buildingService.findAllBuildingsList()
             if (buildings.isEmpty()) {
@@ -32,9 +38,12 @@ class BuildingController(
     }
 
     @GetMapping("/{id}")
-    fun getBuildingById(
+    fun getBuildingById(request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Building?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             val building = buildingService.findBuildingById(id)
             if (building == null) {
@@ -47,8 +56,12 @@ class BuildingController(
 
     @GetMapping("/byname/{buildingName}")
     fun getBuildingByName(
+        request: HttpServletRequest,
         @PathVariable buildingName: String,
     ): ResponseEntity<List<Building>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             val buildings = buildingService.findBuildingByName(buildingName)
             if (buildings.isEmpty()) {
@@ -61,8 +74,12 @@ class BuildingController(
 
     @GetMapping("/byaddress/{address}")
     fun getBuildingByAddress(
+        request: HttpServletRequest,
         @PathVariable address: String,
     ): ResponseEntity<List<Building>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             val buildings = buildingService.findBuildingByAddress(address)
             if (buildings.isEmpty()) {
@@ -75,8 +92,12 @@ class BuildingController(
 
     @PostMapping
     fun addBuilding(
+        request: HttpServletRequest,
         @RequestBody building: Building,
     ): ResponseEntity<Building?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             if (building.id != null) {
                 ResponseEntity.badRequest().build()
@@ -95,9 +116,13 @@ class BuildingController(
 
     @PutMapping("/{id}")
     fun updateBuilding(
+        request: HttpServletRequest,
         @PathVariable id: Long,
         @RequestBody building: Building,
     ): ResponseEntity<Building?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             if (building.id == null) {
                 ResponseEntity.badRequest().build()
@@ -115,8 +140,12 @@ class BuildingController(
 
     @DeleteMapping("/{id}")
     fun deleteBuilding(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             buildingService.findBuildingById(id) ?: return@recordApiRequest ResponseEntity.notFound().build()
             buildingService.deleteBuilding(id)
@@ -126,8 +155,12 @@ class BuildingController(
 
     @DeleteMapping("/multiple")
     fun deleteMultipleBuildings(
+        request: HttpServletRequest,
         @RequestBody buildingIds: List<Long>,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         return metricApiRequestTimerService.recordApiRequest {
             if (buildingIds.isEmpty()) {
                 ResponseEntity.badRequest().build()

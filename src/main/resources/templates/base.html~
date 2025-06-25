@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical System</title>
+    <style>
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+
+            <nav class="nav-menu">
+<!--                <div th:if="${session.userRole == null}">-->
+<!--                    <a href="/login" class="nav-link">Войти</a>-->
+<!--                    <a href="/register" class="nav-link">Регистрация</a>-->
+<!--                </div>-->
+                <div th:if="${session.userRole == 'PATIENT'}">
+                    <a href="/appointments" class="nav-link">Записаться на прием</a>
+                    <a href="/medical-card" class="nav-link">Медицинская карта</a>
+                    <a href="/test-results" class="nav-link">Результаты анализов</a>
+                </div>
+                <div th:if="${session.userRole == 'DOCTOR'}">
+                    <a href="/doctor/appointments" class="nav-link">Приемы</a>
+                    <a href="/doctor/prescriptions" class="nav-link">Рецепты</a>
+                    <a href="/doctor/medicines" class="nav-link">Управление лекарствами</a>
+                </div>
+<!--                <div th:if="${session.userRole == 'ADMIN'}">-->
+<!--                    <a href="/admin/doctors" class="nav-link">Управление врачами</a>-->
+<!--                    <a href="/admin/specializations" class="nav-link">Специализации</a>-->
+<!--                    <a href="/admin/buildings" class="nav-link">Корпуса</a>-->
+<!--                    <a href="/admin/users" class="nav-link">Пользователи</a>-->
+<!--                    <a href="/admin/medicines" class="nav-link">Лекарства</a>-->
+<!--                </div>-->
+<!--                <div th:if="${session.userRole == 'DB_ADMIN'}">-->
+<!--                    <a href="/db-admin/logs" class="nav-link">Логи пользователей</a>-->
+<!--                    <a href="/db-admin/backup" class="nav-link">Экспорт/Импорт данных</a>-->
+<!--                </div>-->
+                <div th:if="${session.userRole != null}">
+                    <a href="/profile" class="nav-link">Профиль</a>
+                    <a href="/logout" class="nav-link">Выход</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div th:replace="~{::content}"></div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <p>© 2024 MedSystem. Все права защищены.</p>
+            </div>
+            <div class="footer-links">
+                <a href="/about" class="nav-link">О нас</a>
+                <a href="/contact" class="nav-link">Контакты</a>
+                <a href="/privacy" class="nav-link">Политика конфиденциальности</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

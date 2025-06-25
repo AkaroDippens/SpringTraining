@@ -2,7 +2,9 @@ package com.example.medicinesystemapi.controller
 
 import com.example.medicinesystemapi.model.Role
 import com.example.medicinesystemapi.service.RoleService
+import com.example.medicinesystemapi.validation.Validations
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -11,8 +13,14 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/roles")
 class RoleController(private val roleService: RoleService) {
+
+    val validations = Validations()
+
     @GetMapping
-    fun getAllRoles(): ResponseEntity<List<Role?>> {
+    fun getAllRoles(request: HttpServletRequest): ResponseEntity<List<Role?>> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val roles = roleService.findAllRolesList()
         return if (roles.isEmpty()) {
             ResponseEntity.noContent().build()
@@ -23,8 +31,12 @@ class RoleController(private val roleService: RoleService) {
 
     @GetMapping("/{id}")
     fun getRoleById(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Role?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val role = roleService.findRoleById(id)
         return if (role == null) {
             ResponseEntity.notFound().build()
@@ -35,8 +47,12 @@ class RoleController(private val roleService: RoleService) {
 
     @GetMapping("/byname/{roleName}")
     fun getRoleByName(
+        request: HttpServletRequest,
         @PathVariable roleName: String,
     ): ResponseEntity<Role?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         val roles = roleService.findRoleByName(roleName)
         return if (roles == null) {
             ResponseEntity.noContent().build()
@@ -47,8 +63,12 @@ class RoleController(private val roleService: RoleService) {
 
     @PostMapping
     fun addRole(
+        request: HttpServletRequest,
         @RequestBody role: Role,
     ): ResponseEntity<Role?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (role.id != null) {
             return ResponseEntity.badRequest().build()
         }
@@ -65,9 +85,13 @@ class RoleController(private val roleService: RoleService) {
 
     @PutMapping("/{id}")
     fun updateRole(
+        request: HttpServletRequest,
         @PathVariable id: Long,
         @RequestBody role: Role,
     ): ResponseEntity<Role?> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         if (role.id == null) {
             return ResponseEntity.badRequest().build()
         }
@@ -82,8 +106,12 @@ class RoleController(private val roleService: RoleService) {
 
     @DeleteMapping("/{id}")
     fun deleteRole(
+        request: HttpServletRequest,
         @PathVariable id: Long,
     ): ResponseEntity<Void> {
+        if (!validations.hasAnyRole(request, "ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
         roleService.findRoleById(id) ?: return ResponseEntity.notFound().build()
         roleService.deleteRole(id)
         return ResponseEntity.noContent().build()

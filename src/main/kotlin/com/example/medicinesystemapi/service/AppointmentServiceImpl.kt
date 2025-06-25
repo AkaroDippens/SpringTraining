@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 @Service
 class AppointmentServiceImpl(
     private val appointmentRepository: AppointmentRepository,
-    private val recordRepository: RecordRepository,
 ) : AppointmentService {
     override fun findAllAppointments(pageable: Pageable): Page<Appointment> {
         return appointmentRepository.findAll(pageable)

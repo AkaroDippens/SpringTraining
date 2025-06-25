@@ -1,46 +1,43 @@
-document.getElementById("registrationForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registrationForm');
 
-    // Сброс ошибок
-    document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-    // Собираем данные из формы
-    const formData = {
-        fullName: document.getElementById("fullName").value,
-        mhiPolicy: document.getElementById("mhiPolicy").value,
-        birthDate: document.getElementById("birthDate").value,
-        password: document.getElementById("password").value
-    };
-
-    try {
-        const response = await fetch("/api/users/add", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
+        // Сброс ошибок
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.textContent = '';
         });
 
-        // Если ответ не успешный (например, 400 или 500)
-        if (!response.ok) {
-            const errors = await response.json();
+        // Подготовка данных
+        const formData = {
+            fullName: document.getElementById('fullName').value,
+            mhiPolicy: document.getElementById('mhiPolicy').value,
+            birthDate: document.getElementById('birthDate').value,
+            password: document.getElementById('password').value
+        };
 
-            // Отображаем ошибки
-            for (const field in errors) {
-                const errorElement = document.getElementById(`error-${field}`);
-                if (errorElement) {
-                    errorElement.textContent = errors[field];
-                }
+        try {
+            const response = await fetch('/api/users/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                const errors = await response.json();
+                Object.entries(errors).forEach(([field, message]) => {
+                    const errorElement = document.getElementById(`error-${field}`);
+                    if (errorElement) errorElement.textContent = message;
+                });
+                return;
             }
-            return;
-        }
 
-        // Успешный ответ
-        alert("Пользователь успешно зарегистрирован!");
-        document.getElementById("registrationForm").reset();
-        window.location.href = `/login`;
-    } catch (error) {
-        console.error("Ошибка при отправке данных:", error);
-        alert("Произошла ошибка при отправке данных. Попробуйте еще раз.");
-    }
+            alert('Регистрация успешна!');
+            window.location.href = '/login';
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка регистрации');
+        }
+    });
 });

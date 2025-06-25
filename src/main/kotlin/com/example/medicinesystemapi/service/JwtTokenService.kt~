@@ -1,0 +1,27 @@
+package com.example.medicinesystemapi.service
+
+import com.example.medicinesystemapi.model.User
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.SignatureAlgorithm
+import org.springframework.stereotype.Service
+import java.util.*
+
+@Service
+class JwtTokenService {
+
+    private val secretKey = "a9df65dcc04d5994135c9c22ed07c2a36aa0a5700688fce0cbeab064c1b8fb09b69c7dc16fc34fa7414e5c0022312c2259e7a422cc8d95efc3094e45bbffe7c4f3cd61f830b5b7a17f223290c2292a08a589da72bfacfcb368d398450fd0fb4a05f6d455a5ca5ca89fee4ee410e2b5f7e8e46864cda196a67dbc22d558f5855b70c50cf1b40fdee975e47f6669bfdff4ef5954abc5f0f03120ab9758512611fa1616ca63bba1edeec43bc6d453f6d9f4f556b91b261a163d024ff0322711976101bee36139a65aba68bdc12375c2657c58c04a4e614126bc84db1039753c7ce38ac6dcd0b88b2611865ce7669ed1ccfcf4de7eb4416db79dfb73bf8898079c0e" // В реальном приложении храните этот ключ в безопасном месте
+    private val expirationTime: Long = 86400000 // 1 день в миллисекундах
+
+    fun generateToken(user: User): String {
+        val now = Date()
+        val expirationDate = Date(now.time + expirationTime)
+
+        return Jwts.builder()
+            .setSubject(user.id.toString())
+            .setSubject(user.mhiPolicy)
+            .setIssuedAt(now)
+            .setExpiration(expirationDate)
+            .signWith(SignatureAlgorithm.HS512, secretKey)
+            .compact()
+    }
+}

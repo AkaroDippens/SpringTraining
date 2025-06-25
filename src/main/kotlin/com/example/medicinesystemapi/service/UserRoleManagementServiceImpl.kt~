@@ -1,0 +1,56 @@
+package com.example.medicinesystemapi.service
+
+import com.example.medicinesystemapi.model.Doctor
+import com.example.medicinesystemapi.repository.BuildingRepository
+import com.example.medicinesystemapi.repository.DoctorRepository
+import com.example.medicinesystemapi.repository.SpecializationRepository
+import com.example.medicinesystemapi.repository.UserRepository
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+
+@Service
+class UserRoleManagementServiceImpl(
+    private val userRepository: UserRepository,
+    private val doctorService: DoctorService,
+    private val doctorRepository: DoctorRepository,
+    private val buildingRepository: BuildingRepository,
+    private val specializationRepository: SpecializationRepository
+) : UserRoleManagementService {
+
+    @Transactional
+    override fun changeUserRole(userId: Int, newRole: String): Boolean {
+        val user = userRepository.findById(userId.toLong()).orElse(null) ?: return false
+        val oldRole = user.idRole?.roleName
+
+        // Update user role
+        user.idRole?.roleName = newRole
+        userRepository.save(user)
+
+        // Handle doctor creation/deletion based on role change
+        when {
+            oldRole != "DOCTOR" && newRole == "DOCTOR" -> {
+                // Create new doctor
+                val doctor = Doctor().apply {
+                    this.id = null
+                    this.fullName = user.fullName
+                    // Set default specialization and building - you'll need to define these
+                    this.idSpecialization = specializationRepository.findById(1).orElse(null)
+                    this.idBuilding = buildingRepository.findById(1).orElse(null)
+                    this.experience = LocalDate.now()
+                }
+                doctorRepository.save(doctor)
+            }
+            oldRole == "DOCTOR" && newRole != "DOCTOR" -> {
+                // Delete doctor
+                doctorRepository.findAll()
+                    .find { it.fullName == user.fullName }
+                    ?.let { doctor ->
+                        doctorRepository.deleteById(doctor.id!!.toLong())
+                    }
+            }
+        }
+
+        return true
+    }
+}

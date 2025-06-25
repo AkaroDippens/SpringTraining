@@ -1,20 +1,15 @@
 package com.example.medicinesystemapi.service
 
-import com.influxdb.client.InfluxDBClient
-import com.influxdb.client.domain.WritePrecision
-import com.influxdb.client.write.Point
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.stereotype.Service
-import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
 import javax.sql.DataSource
 
 @Service
 class MetricTableRecordCountService(
     private val meterRegistry: MeterRegistry,
-    private val dataSource: DataSource,
-    private val influxDBClient: InfluxDBClient
+    private val dataSource: DataSource
 ) {
 
     private val tableCounts = mutableMapOf<String, AtomicInteger>()
@@ -34,8 +29,6 @@ class MetricTableRecordCountService(
                 .description("Количество записей в таблице")
                 .tag("table", tableName)
                 .register(meterRegistry)
-
-            writeToInfluxDB(tableName, count)
         }
     }
 
@@ -60,14 +53,5 @@ class MetricTableRecordCountService(
             }
         }
         return 0
-    }
-
-    private fun writeToInfluxDB(tableName: String, count: Int) {
-        val point = Point.measurement("table_record_count")
-            .addTag("table", tableName)
-            .addField("count", count)
-            .time(Instant.now(), WritePrecision.NS)
-
-        influxDBClient.writeApiBlocking.writePoint(point)
     }
 }

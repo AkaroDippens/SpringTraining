@@ -1,0 +1,153 @@
+/* Основной контейнер */
+.medical-card-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.6s ease;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Заголовки */
+.medical-card-container .section-title {
+    font-size: 2.5rem;
+    color: #4545a9;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+
+.medical-card-container .section-title-h2 {
+    font-size: 1.5rem;
+    color: #4545a9;
+    text-align: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Сетки */
+.medical-card-container .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.medical-card-container .date-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Колонки */
+    gap: 1rem; /* Расстояние между кнопками */
+}
+
+.medical-card-container .time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Колонки */
+    gap: 1rem; /* Расстояние между кнопками */
+}
+
+/* Кнопки */
+.medical-card-container .btn {
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #48daeb, #48daeb);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.medical-card-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.medical-card-container .btn-specialization,
+.medical-card-container .btn-doctor,
+.medical-card-container .btn-time {
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: #2f2f7a;
+    border: 2.3px solid #2f2f7a; /* Включаем границу */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.075rem;
+    transition: background-color 0.3s ease, box-shadow 0.2s ease;
+    text-align: center; /* Центрируем текст */
+    display: inline-block; /* Уменьшаем ширину кнопки */
+}
+
+.medical-card-container .btn-specialization:hover,
+.medical-card-container .btn-doctor:hover,
+.medical-card-container .btn-time:hover {
+    font-weight: bold;
+    color: white;
+    background-color: #20305b;
+    transform: translateY(-2px);
+}
+
+.medical-card-container btn-doctor.selected,
+.medical-card-container .btn-specialization.selected,
+.medical-card-container .btn-time.selected {
+    background: #0061ff;
+    border-color: #0061ff;
+    color: white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Подтверждение */
+.medical-card-container .confirm-btn {
+    background: linear-gradient(135deg, #0061ff, #48daeb);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 20px auto; /* Увеличиваем отступ сверху и снизу */
+    display: block; /* Для центрирования */
+    padding: 15px 30px; /* Увеличиваем внутренние отступы */
+    font-size: 18px; /* Увеличиваем размер шрифта */
+    width: 450px; /* Фиксированная ширина кнопки */
+    text-align: center; /* Центрируем текст */
+}
+
+.medical-card-container .confirm-btn:hover {
+    transform: translateY(-2px);
+}
+
+.medical-card-container .date-card {
+    padding: 0.75rem 1rem;
+    font-weight: bold;
+    background: transparent;
+    color: #2f2f7a;
+    border: 2.3px solid #2f2f7a; /* Граница, как у других кнопок */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.940rem;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+.medical-card-container .date-card:hover {
+    background-color: #20305b;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Лёгкая тень при наведении */
+}
+
+.medical-card-container .date-card.selected {
+    background-color: #0061ff;
+    color: white;
+    border-color: #0061ff; /* Меняем цвет границы при выборе */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* Более яркая тень */
+}
+
+
+/* Анимация */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

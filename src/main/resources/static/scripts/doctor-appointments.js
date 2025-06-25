@@ -1,6 +1,7 @@
 import { jwtDecode } from './jwt-decode.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
+    // DOM элементы
     const upcomingList = document.getElementById('upcoming-list');
     const pastList = document.getElementById('past-list');
     const upcomingHeader = document.getElementById('upcoming-header');
@@ -13,20 +14,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     const completeAppointmentButton = document.getElementById('complete-appointment');
     const closeViewButton = document.getElementById('close-view-modal');
     const closeViewAppointmentButton = document.getElementById('close-view-appointment');
-    let currentAppointmentId = null;
 
+    // Состояние приложения
+    let currentAppointmentId = null;
     const token = localStorage.getItem('authToken');
     const decodedToken = jwtDecode(token);
     const fullName = decodedToken.fullName;
-
     let doctorId = null;
 
+    // Получение ID доктора
     async function fetchDoctorId() {
         try {
-            const response = await fetch(`/api/doctors/byfullname/${fullName}`);
-            if (!response.ok) {
-                throw new Error('Ошибка при запросе данных о докторе');
-            }
+            const response = await fetch(`/api/doctors/byfullname/${fullName}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Ошибка при запросе данных о докторе');
             const doctor = await response.json();
             return doctor.id;
         } catch (error) {
@@ -35,12 +38,14 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    // Получение записей по ID доктора
     async function fetchRecordsByDoctorId(doctorId) {
         try {
-            const response = await fetch(`/api/records/bydoctor/${doctorId}`);
-            if (!response.ok) {
-                throw new Error('Ошибка при запросе записей');
-            }
+            const response = await fetch(`/api/records/bydoctor/${doctorId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Ошибка при запросе записей');
             return await response.json();
         } catch (error) {
             console.error('Ошибка при получении записей:', error);
@@ -48,19 +53,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    // Получение приемов по ID записей
     async function fetchAppointmentsByRecordIds(recordIds) {
         try {
             const appointments = await Promise.all(
                 recordIds.map(async recordId => {
-                    const response = await fetch(`/api/appointments/record/${recordId}`);
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        console.warn(`Запись с ID ${recordId} не имеет приёма.`);
-                        return null;
-                    }
+                    const response = await fetch(`/api/appointments/record/${recordId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (response.ok) return response.json();
+                    console.warn(`Запись с ID ${recordId} не имеет приёма.`);
+                    return null;
                 })
             );
+
             return appointments.filter(appt => appt !== null);
         } catch (error) {
             console.error('Ошибка при загрузке приёмов:', error);
@@ -68,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    // Загрузка приемов
     async function loadAppointments() {
         try {
             if (!doctorId) {
@@ -93,35 +101,26 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             records.forEach(record => {
                 const appointment = appointments.find(appt => appt.idRecord.id === record.id);
-                // Приём считается прошедшим только если оба поля diagnosis и recommendations заполнены
                 const isPast = appointment && appointment.diagnosis && appointment.recommendations;
 
-                if (isPast) {
-                    pastRecords.push({ record, appointment });
-                } else {
-                    upcomingRecords.push({ record, appointment });
-                }
+                if (isPast) pastRecords.push({ record, appointment });
+                else upcomingRecords.push({ record, appointment });
             });
 
-            // Сортировка по убыванию даты (самые свежие сверху)
             upcomingRecords.sort((a, b) => new Date(b.record.appointmentDate) - new Date(a.record.appointmentDate));
             pastRecords.sort((a, b) => new Date(b.record.appointmentDate) - new Date(a.record.appointmentDate));
 
-            // Предстоящие
             if (upcomingRecords.length > 0) {
                 upcomingRecords.forEach(({ record, appointment }) => {
-                    const item = createAppointmentItem(record, appointment);
-                    upcomingList.appendChild(item);
+                    upcomingList.appendChild(createAppointmentItem(record, appointment));
                 });
             } else {
                 upcomingList.innerHTML = '<p>Нет предстоящих записей.</p>';
             }
 
-            // Прошедшие
             if (pastRecords.length > 0) {
                 pastRecords.forEach(({ record, appointment }) => {
-                    const item = createAppointmentItem(record, appointment);
-                    pastList.appendChild(item);
+                    pastList.appendChild(createAppointmentItem(record, appointment));
                 });
             } else {
                 pastList.innerHTML = '<p>Нет прошедших записей.</p>';
@@ -134,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
+    // Создание элемента приема
     function createAppointmentItem(record, appointment) {
         const item = document.createElement('div');
         item.className = 'history-item';
@@ -150,9 +150,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 `<button class="btn" onclick="startAppointment(${record.id})">Начать приём</button>`
             }
         `;
+
         return item;
     }
 
+    // Глобальные функции для обработки событий
     window.startAppointment = function (recordId) {
         fetch(`/api/records/${recordId}/start-appointment`, {
             method: 'POST',
@@ -162,13 +164,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         })
             .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Ошибка при создании приёма');
-                }
+                if (response.ok) return response.json();
+                throw new Error('Ошибка при создании приёма');
             })
-            .then(appointment => {
+            .then(() => {
                 alert('Приём успешно начат!');
                 loadAppointments();
             })
@@ -176,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     window.openAppointment = function (id) {
-        fetch(`/api/appointments/${id}`)
+        fetch(`/api/appointments/${id}`, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => response.json())
             .then(appt => {
                 const isPast = appt.diagnosis && appt.recommendations;
@@ -184,6 +183,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     alert('Этот приём уже завершён и не подлежит редактированию.');
                     return;
                 }
+
                 currentAppointmentId = appt.id;
                 document.getElementById('reason').value = appt.reason || '';
                 document.getElementById('diagnosis').value = appt.diagnosis || '';
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     };
 
     window.viewAppointment = function (id) {
-        fetch(`/api/appointments/${id}`)
+        fetch(`/api/appointments/${id}`, { headers: { 'Authorization': `Bearer ${token}` } })
             .then(response => response.json())
             .then(appt => {
                 document.getElementById('view-date').textContent = appt.idRecord.appointmentDate.split('T')[0];
@@ -206,6 +206,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             .catch(error => console.error('Ошибка при загрузке данных приёма:', error));
     };
 
+    // Обработчики событий
     saveChangesButton.addEventListener('click', () => {
         const updatedData = {
             reason: document.getElementById('reason').value,
@@ -261,49 +262,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     upcomingHeader.addEventListener('click', () => {
-        if (upcomingList.style.display === 'block') {
-            upcomingList.style.display = 'none';
-        } else {
-            upcomingList.style.display = 'block';
-            pastList.style.display = 'none';
-        }
+        upcomingList.style.display = upcomingList.style.display === 'block' ? 'none' : 'block';
+        pastList.style.display = 'none';
     });
 
     pastHeader.addEventListener('click', () => {
-        if (pastList.style.display === 'block') {
-            pastList.style.display = 'none';
-        } else {
-            pastList.style.display = 'block';
-            upcomingList.style.display = 'none';
-        }
+        pastList.style.display = pastList.style.display === 'block' ? 'none' : 'block';
+        upcomingList.style.display = 'none';
     });
 
-    closeButton.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
+    // Закрытие модальных окон
+    [closeButton, closeAppointmentButton].forEach(btn =>
+        btn.addEventListener('click', () => modal.style.display = 'none')
+    );
 
-    closeAppointmentButton.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    closeViewButton.addEventListener('click', () => {
-        viewModal.style.display = 'none';
-    });
-
-    closeViewAppointmentButton.addEventListener('click', () => {
-        viewModal.style.display = 'none';
-    });
+    [closeViewButton, closeViewAppointmentButton].forEach(btn =>
+        btn.addEventListener('click', () => viewModal.style.display = 'none')
+    );
 
     window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        } else if (event.target === viewModal) {
-            viewModal.style.display = 'none';
-        }
+        if (event.target === modal) modal.style.display = 'none';
+        else if (event.target === viewModal) viewModal.style.display = 'none';
     });
 
+    // Инициализация
     doctorId = await fetchDoctorId();
-    if (doctorId) {
-        loadAppointments();
-    }
+    if (doctorId) loadAppointments();
 });

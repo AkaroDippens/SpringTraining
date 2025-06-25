@@ -1,0 +1,11 @@
+package com.example.medicinesystemapi.service
+
+import com.example.medicinesystemapi.model.ViewUser
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+
+interface ViewUserService {
+    fun findAllViewUsers(pageable: Pageable): Page<ViewUser>
+    fun findViewUserById(id: Int): ViewUser?
+    fun exportViewUsersToCsv(): String
+}

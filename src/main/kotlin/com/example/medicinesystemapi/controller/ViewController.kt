@@ -1,5 +1,6 @@
 package com.example.medicinesystemapi.controller
 
+import com.example.medicinesystemapi.config.JwtConfig
 import com.example.medicinesystemapi.model.MedicalRecord
 import com.example.medicinesystemapi.model.User
 import com.example.medicinesystemapi.service.MedicalRecordService
@@ -112,9 +113,7 @@ class ViewController
         private fun validateToken(token: String): String {
             val claims =
                 Jwts.parserBuilder()
-                    .setSigningKey(
-                        "cb7f3bb50c74c595bf95eaab227b9101ecb38f99adb19f31360c374a958a18a466fa192c0b409771b00c1bb4e0b6fb57ee1541ff25ceca686b1d4161f0c4d92a".toByteArray(),
-                    )
+                    .setSigningKey(JwtConfig.SECRET_KEY)
                     .build()
                     .parseClaimsJws(token)
                     .body
